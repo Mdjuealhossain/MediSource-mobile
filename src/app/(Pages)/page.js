@@ -1,4 +1,6 @@
 "use client";
+import Product from "@/components/Product";
+import Products from "@/widget/Products";
 import { useState } from "react";
 
 const Home = () => {
@@ -30,22 +32,7 @@ const Home = () => {
                     </span>
                 ))}
             </div>
-
-            <div className=" flex items-center gap-1">
-                <p className=" font-medium text-subtitle1">1.</p>
-                <div className=" px-3 py-2 rounded border border-gary_700 w-full">
-                    <h6 className=" text-H6 font-medium mb-1">
-                        Amdocal plus 25mg
-                    </h6>
-                    <div className=" flex items-center gap-0.5">
-                        <p className=" text-body2">Qty: 1</p>{" "}
-                        <span className=" px-1">|</span>
-                        <p className=" text-body2">R: 123.00 TK</p>
-                        <span className=" px-1">|</span>
-                        <p className=" text-body2">A: 172.00Tk</p>
-                    </div>
-                </div>
-            </div>
+            <Products />
         </div>
     );
 };
