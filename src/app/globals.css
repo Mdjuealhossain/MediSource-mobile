@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+
+body {
+    @apply font-poppins text-body1 font-normal bg-default text-primary;
+  
+}
+
+
+
+.calender-modal{
+    width: 255px !important;
+}
+
+.custom-input {
+    text-align: left !important;
+    box-shadow: none !important;
+
+}
+
+.react-calendar-datetime-picker .input-picker .input-picker--input {
+   @apply !border-gary_700
+}
