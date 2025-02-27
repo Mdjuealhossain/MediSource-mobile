@@ -1,3 +1,4 @@
+import { ProductProvider } from "./contexApi";
 import "./globals.css";
 
 import { Poppins } from "next/font/google";
@@ -11,7 +12,9 @@ const poppins = Poppins({
 export default function RootLayout({ children }) {
     return (
         <html lang="en" className={poppins.variable}>
-            <body className="font-poppins">{children}</body>
+            <ProductProvider>
+                <body className="font-poppins">{children}</body>
+            </ProductProvider>
         </html>
     );
 }

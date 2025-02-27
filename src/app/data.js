@@ -1,0 +1,128 @@
+export const tabContentas = [
+    {
+        id: 1,
+        catagory_id: "1",
+        catagory: "All",
+        products: [
+            {
+                id: 1,
+                name: "Amdocal plus 25mg",
+                quantity: 1,
+                regularPrice: 123,
+                actualPrice: 172,
+            },
+            {
+                id: 2,
+                name: "Paracetamol 500mg",
+                quantity: 2,
+                regularPrice: 50,
+                actualPrice: 70,
+            },
+            {
+                id: 3,
+                name: "Omeprazole 20mg",
+                quantity: 1,
+                regularPrice: 90,
+                actualPrice: 120,
+            },
+        ],
+    },
+    {
+        id: 2,
+        catagory_id: "2",
+        catagory: "Purchase",
+        products: [
+            {
+                id: 1,
+                name: "Amdocal plus 25mg 2333",
+                quantity: 1,
+                regularPrice: 123,
+                actualPrice: 172,
+            },
+            {
+                id: 2,
+                name: "Paracetamol 500mg",
+                quantity: 2,
+                regularPrice: 50,
+                actualPrice: 70,
+            },
+            {
+                id: 3,
+                name: "Omeprazole 20mg",
+                quantity: 1,
+                regularPrice: 90,
+                actualPrice: 120,
+            },
+        ],
+    },
+    {
+        id: 3,
+        catagory_id: "3",
+        catagory: "Short",
+        products: [
+            {
+                id: 1,
+                name: "Amdocal plus 25mg 333",
+                quantity: 1,
+                regularPrice: 123,
+                actualPrice: 172,
+            },
+            {
+                id: 2,
+                name: "Paracetamol 500mg",
+                quantity: 2,
+                regularPrice: 50,
+                actualPrice: 70,
+            },
+            {
+                id: 3,
+                name: "Omeprazole 20mg",
+                quantity: 1,
+                regularPrice: 90,
+                actualPrice: 120,
+            },
+        ],
+    },
+    {
+        id: 4,
+        catagory_id: "4",
+        catagory: "D-R",
+        products: [
+            {
+                id: 1,
+                name: "Amdocal plus 25mg 444",
+                quantity: 1,
+                regularPrice: 123,
+                actualPrice: 172,
+            },
+            {
+                id: 2,
+                name: "Paracetamol 500mg",
+                quantity: 2,
+                regularPrice: 50,
+                actualPrice: 70,
+            },
+            {
+                id: 3,
+                name: "Omeprazole 20mg",
+                quantity: 1,
+                regularPrice: 90,
+                actualPrice: 120,
+            },
+            {
+                id: 4,
+                name: "Paracetamol 500mg",
+                quantity: 2,
+                regularPrice: 50,
+                actualPrice: 70,
+            },
+            {
+                id: 5,
+                name: "Omeprazole 20mg",
+                quantity: 1,
+                regularPrice: 90,
+                actualPrice: 120,
+            },
+        ],
+    },
+];
