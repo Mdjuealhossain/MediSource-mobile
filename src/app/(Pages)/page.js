@@ -8,7 +8,10 @@ const Home = () => {
             <Tabs tabs={tabs?.data} contentClass={"md:mt-10 mt-6"}>
                 {tabContentas.map((content) => (
                     <div key={content.id} id={content.id}>
-                        <Products products={content.products} />
+                        <Products
+                            isshowap={content.catagory == "All"}
+                            products={content.products}
+                        />
                     </div>
                 ))}
             </Tabs>

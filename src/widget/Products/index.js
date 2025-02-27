@@ -1,8 +1,9 @@
 "use client";
-import Product from "@/components/Product";
-import React, { useState } from "react";
+import { useState } from "react";
 
-const Products = ({ products }) => {
+import Product from "@/components/Product";
+
+const Products = ({ products, isshowap }) => {
     const [items, setItems] = useState(products);
     const handleDelete = (id) => {
         setItems(items.filter((item) => item.id !== id));
@@ -16,6 +17,7 @@ const Products = ({ products }) => {
                     item={product}
                     index={index}
                     onDelete={handleDelete}
+                    isshowap={isshowap}
                 />
             ))}
         </div>
