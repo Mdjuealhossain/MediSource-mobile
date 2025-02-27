@@ -1,12 +1,23 @@
+"use client";
 import Product from "@/components/Product";
-import React from "react";
+import React, { useState } from "react";
 
 const Products = () => {
+    const [items, setItems] = useState(products);
+    const handleDelete = (id) => {
+        setItems(items.filter((item) => item.id !== id));
+    };
+    console.log("first,", items);
+
     return (
         <div className="space-y-3">
-            {products.map((product, index) => (
+            {items.map((product, index) => (
                 <div key={product.id} className="flex items-center gap-1">
-                    <Product product={product} index={index} />
+                    <Product
+                        item={product}
+                        index={index}
+                        onDelete={handleDelete}
+                    />
                 </div>
             ))}
         </div>

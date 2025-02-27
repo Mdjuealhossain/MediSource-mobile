@@ -11,10 +11,10 @@ const Home = () => {
     };
 
     return (
-        <div className=" mt-10 px-4">
-            <h3 className=" text-H4 font-semibold mb-4 text-center">
+        <div className=" mt-4 px-4">
+            {/* <h3 className=" text-H4 font-semibold mb-4 text-center">
                 Sold Products List
-            </h3>
+            </h3> */}
             <div
                 className={`flex justify-center mb-6  items-center  gap-2 whitespace-nowrap md:scroll-container overflow-x-auto no-scrollbar`}
             >
@@ -43,6 +43,6 @@ const tabs = {
         { id: 1, name: "All" },
         { id: 2, name: "Purchase" },
         { id: 3, name: "Short" },
-        { id: 4, name: "Trending" },
+        { id: 4, name: "D-R" },
     ],
 };

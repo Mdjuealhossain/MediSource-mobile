@@ -13,7 +13,10 @@ const Nav = () => {
         <>
             <div>
                 <nav className=" flex items-center justify-between px-4 py-3 bg-success_main text-white">
-                    <p>mediSource</p>
+                    <p>
+                        Purchase ={" "}
+                        <span className=" font-semibold pl-1">50000</span>
+                    </p>
                     <div className=" flex items-center gap-4 ">
                         <span>
                             <MdOutlineSearch size={24} />
