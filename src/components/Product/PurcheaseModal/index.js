@@ -11,7 +11,6 @@ const PurchaseModal = ({ data, isOpen, closeModal }) => {
                     ></div>
                     <div className=" p-2 bg-white z-50 rounded-md w-[150px] flex flex-col items-center justify-center">
                         <input
-                            autoFocus
                             placeholder="Enter Purchase"
                             className=" text-subtitle2 placeholder:text-subtitle2 w-full outline-none focus:outline-none border rounded px-4 py-[3px]"
                         />
