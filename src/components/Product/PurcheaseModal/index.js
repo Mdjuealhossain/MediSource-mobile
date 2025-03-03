@@ -19,7 +19,7 @@ const PurchaseModal = ({ data, isOpen, closeModal }) => {
                         <div className="w-full mt-2">
                             <button
                                 onClick={closeModal}
-                                className=" text-subtitle2 w-full font-medium px-12 py-2 rounded text-white bg-success_main capitalize"
+                                className=" text-body2 w-full font-medium px-4 py-1.5 rounded text-white bg-success_main capitalize"
                             >
                                 add
                             </button>
