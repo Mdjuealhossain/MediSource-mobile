@@ -10,9 +10,11 @@ const PurchaseModal = ({ data, isOpen, closeModal }) => {
                         onClick={closeModal}
                     ></div>
                     <div className=" p-2 bg-white z-50 rounded-md w-[150px] flex flex-col items-center justify-center">
-                        <div className=" flex items-center justify-center gap-1 mb-1">
-                            <input className=" text-subtitle2 w-full outline-none focus:outline-none border rounded px-4 py-[3px]" />
-                        </div>
+                        <input
+                            autoFocus
+                            placeholder="Enter Purchase"
+                            className=" text-subtitle2 placeholder:text-subtitle2 w-full outline-none focus:outline-none border rounded px-4 py-[3px]"
+                        />
                         <div className="w-full mt-2">
                             <button
                                 onClick={closeModal}
