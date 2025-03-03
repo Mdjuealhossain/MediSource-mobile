@@ -6,7 +6,7 @@ const PurchaseModal = ({ data, isOpen, closeModal }) => {
             {isOpen && (
                 <div className=" fixed inset-0 flex items-center justify-center z-30 mx-4">
                     <div
-                        className="fixed inset-0 bg-[#0006] dark:bg-white/20"
+                        className="fixed inset-0 bg-black"
                         onClick={closeModal}
                     ></div>
                     <div className=" p-2 bg-white z-50 rounded-md w-[150px] flex flex-col items-center justify-center">
