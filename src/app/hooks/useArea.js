@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { useApi } from "./useApi";
-// import { useApi } from "./useApi";
 
-const useGetDistrict = () => {
+import { useApi } from "./useApi";
+
+const useArea = () => {
     const { apiRequest } = useApi();
     const [data, setData] = useState(null); // Stores the fetched data
     const [loading, setLoading] = useState(false); // Loading state
     const [error, setError] = useState(null); // Error state
 
-    const fetchDestrict = async () => {
+    const fetchArea = async () => {
         setLoading(true);
         setError(null);
 
@@ -17,8 +17,9 @@ const useGetDistrict = () => {
             responseData,
             error: fetchError,
         } = await apiRequest({
-            endpoint: "/district",
+            endpoint: "/area/1",
             method: "GET",
+            auth: false,
         });
 
         if (success) {
@@ -31,10 +32,10 @@ const useGetDistrict = () => {
     };
 
     useEffect(() => {
-        fetchDestrict();
+        fetchArea();
     }, []);
 
     return { data, loading, error };
 };
 
-export default useGetDistrict;
+export default useArea;

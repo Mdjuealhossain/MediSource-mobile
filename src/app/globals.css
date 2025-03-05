@@ -17,7 +17,7 @@ body {
 }
 
 .calender-modal{
-    width: 300px !important;
+    width: 100% !important;
 }
 
 .custom-input {

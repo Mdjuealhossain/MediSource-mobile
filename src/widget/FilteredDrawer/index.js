@@ -2,30 +2,22 @@
 import React, { useEffect } from "react";
 import dynamic from "next/dynamic";
 import { useForm, Controller } from "react-hook-form";
-
+const Drawer = dynamic(() => import("react-modern-drawer"), { ssr: false });
+import { DtPicker } from "react-calendar-datetime-picker";
 import { IoMdClose } from "react-icons/io";
 import Select from "@/components/Select";
-import { DtPicker } from "react-calendar-datetime-picker";
+
+import useGetDistrict from "@/app/hooks/useDistrict";
+import { useTab } from "@/app/contexApi";
+import useArea from "@/app/hooks/useArea";
 import "react-calendar-datetime-picker/dist/style.css";
-
-const Drawer = dynamic(() => import("react-modern-drawer"), { ssr: false });
 import "react-modern-drawer/dist/index.css";
-import useGetDistrict from "@/hooks/useDistrict";
-import useArea from "@/hooks/useArea";
-
-const options = [
-    { id: 1, name: "Option 1" },
-    { id: 2, name: "Option 2" },
-    { id: 3, name: "Option 3" },
-    { id: 4, name: "Option 4" },
-    { id: 5, name: "Option 5" },
-];
 
 const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
     const { data } = useGetDistrict();
     const { data: areaData } = useArea();
+    const { isFilterData, setIsFilterData } = useTab();
 
-    console.log("data", data);
     const {
         control,
         handleSubmit,
@@ -50,7 +42,8 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
     }, [isOpen]);
 
     const onSubmit = (data) => {
-        console.log("Submitted Data:", data);
+        setIsFilterData(data);
+        toggleDrawer();
     };
 
     if (!isOpen) return null;
@@ -85,8 +78,6 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
                                         {...field}
                                         value={field.value}
                                         onChange={(val) => field.onChange(val)}
-                                        withTime
-                                        // showTimeInput
                                         calendarType="US"
                                         placeholder="Select a date"
                                         inputClass="!py-2 !h-[34px] custom-input  !px-4 w-full rounded bg-white ring-gary_700 text-black   bg-gray_500 text-body2 focus:ring-1 focus:ring-gary_700 focus:outline-none ring-1"

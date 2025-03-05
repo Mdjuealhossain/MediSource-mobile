@@ -29,14 +29,14 @@ const AlartModal = ({
                         className="fixed inset-0 bg-[#0006] dark:bg-white/20"
                         onClick={closeModal}
                     ></div>
-                    <div className=" px-6 py-16 bg-warning_extra_light z-50 rounded-2xl w-350">
+                    <div className=" px-6 py-12 bg-white z-50 rounded-2xl w-[250px]">
                         <div className=" flex items-center justify-center mb-4">
                             <Image
                                 src={image}
                                 height={64}
                                 width={64}
                                 alt="confirm"
-                                className=" h-16 w-16"
+                                className=" h-10 w-10"
                             />
                         </div>
                         <h6 className=" text-H6 text-center font-bold text-warning_main leading-7">

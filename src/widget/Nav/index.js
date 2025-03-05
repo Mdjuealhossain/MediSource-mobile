@@ -3,15 +3,15 @@ import { useEffect, useState, useRef } from "react";
 import { MdOutlineSearch } from "react-icons/md";
 import { BsFilterRight } from "react-icons/bs";
 
-import FilteredDrawer from "../FilteredDrawer";
 import { tabContentas } from "@/app/data";
 import { useTab } from "@/app/contexApi";
+import FilteredDrawer from "../FilteredDrawer";
 
 const Nav = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { activeTab } = useTab();
     const [isSearch, setIsSearch] = useState(false);
-    console.log("----", isSearch);
+    const { isData, setIsData } = useTab();
 
     const searchRef = useRef(null);
 
@@ -23,20 +23,18 @@ const Nav = () => {
 
     const calagory =
         item_catagories?.catagory === "All"
-            ? "Purchase"
+            ? "Total Order"
             : item_catagories?.catagory || "All Category";
 
-    // Open search field when search icon is clicked
     const openSearch = (e) => {
         e.preventDefault();
-        e.stopPropagation(); // Stop event propagation to prevent triggering closeSearch
-        setIsSearch(true); // Show the search input
+        e.stopPropagation();
+        setIsSearch(true);
     };
 
-    // Close the search field when clicking outside of it
     const closeSearch = (e) => {
         if (searchRef.current && !searchRef.current.contains(e.target)) {
-            setIsSearch(false); // Hide the search input if clicked outside
+            setIsSearch(false);
         }
     };
 
@@ -59,7 +57,16 @@ const Nav = () => {
                 document.removeEventListener("click", handleClickOutside);
             };
         }
-    }, [isSearch]); // Re-run the effect when `isSearch` changes
+    }, [isSearch]);
+
+    const totalAmountSum =
+        isData &&
+        isData.reduce(
+            (sum, product) =>
+                sum +
+                (product.rate - (product.rate * 4) / 100) * product.total_qty,
+            0
+        );
 
     return (
         <>
@@ -69,10 +76,14 @@ const Nav = () => {
                         isSearch ? " justify-center" : " justify-between"
                     } px-4 py-3 bg-success_main text-white`}
                 >
-                    <p className={`${isSearch ? "hidden" : "inline-block"}`}>
-                        {calagory} =
-                        <span className=" font-semibold pl-1">
-                            {item_catagories?.products?.length || 0}
+                    <p
+                        className={`${
+                            isSearch ? "hidden" : "inline-block"
+                        } text-subtitle1`}
+                    >
+                        {"Total Order"} =
+                        <span className="font-semibold pl-1">
+                            {parseFloat((totalAmountSum || 0).toFixed(2))}
                         </span>
                     </p>
 
@@ -97,7 +108,10 @@ const Nav = () => {
                         >
                             <MdOutlineSearch size={24} />
                         </span>
-                        <span onClick={toggleDrawer}>
+                        <span
+                            onClick={toggleDrawer}
+                            className=" cursor-pointer"
+                        >
                             <BsFilterRight size={24} />
                         </span>
                     </div>

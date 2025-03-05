@@ -1,7 +1,7 @@
 import { useState } from "react";
 
+import useModal from "@/app/hooks/useModal";
 import PurchaseModal from "./PurcheaseModal";
-import useModal from "@/hooks/useModal";
 
 const Product = ({ item, index, onDelete, isshowap = false }) => {
     const { isOpen, openModal, closeModal } = useModal();
@@ -32,7 +32,7 @@ const Product = ({ item, index, onDelete, isshowap = false }) => {
             // Only work if isshowap is true
             setIsSwiping(false);
             if (swipePosition < -swipeThreshold) {
-                onDelete(item.id); // Delete item
+                onDelete(item.product_id); // Delete item
             }
             setTimeout(() => setSwipePosition(0), 200); // Delay before resetting position
         }
@@ -59,7 +59,7 @@ const Product = ({ item, index, onDelete, isshowap = false }) => {
             // Only work if isshowap is true
             setIsSwiping(false);
             if (swipePosition < -swipeThreshold) {
-                onDelete(item.id); // Delete item
+                onDelete(item.product_id); // Delete item
             }
 
             setTimeout(() => setSwipePosition(0), 200);
@@ -67,6 +67,9 @@ const Product = ({ item, index, onDelete, isshowap = false }) => {
     };
 
     const deleteButtonVisible = swipePosition < -swipeThreshold;
+
+    const rate = item.rate - (item.rate * 4) / 100;
+    const amount = rate * item.total_qty;
 
     return (
         <>
@@ -85,27 +88,29 @@ const Product = ({ item, index, onDelete, isshowap = false }) => {
                     <p className="font-medium text-subtitle1">{index + 1}.</p>
                     <div className="px-3 py-2 rounded border border-gary_700 w-full bg-paper">
                         <h6 className="text-H6 font-medium mb-1">
-                            {item.name}
+                            {item.product_name}
                         </h6>
                         <div className="flex items-center gap-0.5">
                             <p className="text-body2">
                                 Qty:
                                 <span className="font-semibold pl-1">
-                                    {item.quantity}
+                                    {item.total_qty}
                                 </span>
                             </p>
                             <span className="px-1">|</span>
                             <p className="text-body2">
                                 R:
                                 <span className="font-semibold pl-1">
-                                    {item.regularPrice} TK
+                                    {parseFloat((rate || 0).toFixed(1))}
+                                    TK
                                 </span>
                             </p>
                             <span className="px-1">|</span>
                             <p className="text-body2">
                                 A:
                                 <span className="font-semibold pl-1">
-                                    {item.actualPrice} TK
+                                    {parseFloat((amount || 0).toFixed(1))}
+                                    TK
                                 </span>
                             </p>
                         </div>
