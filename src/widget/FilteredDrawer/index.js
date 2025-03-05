@@ -10,6 +10,8 @@ import "react-calendar-datetime-picker/dist/style.css";
 
 const Drawer = dynamic(() => import("react-modern-drawer"), { ssr: false });
 import "react-modern-drawer/dist/index.css";
+import useGetDistrict from "@/hooks/useDistrict";
+import useArea from "@/hooks/useArea";
 
 const options = [
     { id: 1, name: "Option 1" },
@@ -20,6 +22,10 @@ const options = [
 ];
 
 const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
+    const { data } = useGetDistrict();
+    const { data: areaData } = useArea();
+
+    console.log("data", data);
     const {
         control,
         handleSubmit,
@@ -80,7 +86,7 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
                                         value={field.value}
                                         onChange={(val) => field.onChange(val)}
                                         withTime
-                                        showTimeInput
+                                        // showTimeInput
                                         calendarType="US"
                                         placeholder="Select a date"
                                         inputClass="!py-2 !h-[34px] custom-input  !px-4 w-full rounded bg-white ring-gary_700 text-black   bg-gray_500 text-body2 focus:ring-1 focus:ring-gary_700 focus:outline-none ring-1"
@@ -101,7 +107,7 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
                                         placeholder="Select One"
                                         multipleValu={false}
                                         onChange={(val) => field.onChange(val)}
-                                        options={options}
+                                        options={data?.data}
                                         overlyClass="!bg-transparent"
                                         inputClass="py-2  px-4 w-full rounded bg-white ring-gary_700 text-black bg-gray_500 text-body2 focus:ring-1 focus:ring-gary_700 focus:outline-none ring-1"
                                     />
@@ -121,7 +127,7 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
                                         placeholder="Select One"
                                         multipleValu={false}
                                         onChange={(val) => field.onChange(val)}
-                                        options={options}
+                                        options={areaData?.data}
                                         overlyClass="!bg-transparent"
                                         inputClass="py-2  px-4 w-full rounded bg-white ring-gary_700 text-black bg-gray_500 text-body2 focus:ring-1 focus:ring-gary_700 focus:outline-none ring-1"
                                     />
