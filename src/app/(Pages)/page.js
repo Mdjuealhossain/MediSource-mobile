@@ -18,7 +18,7 @@ const Home = () => {
         from_date: prevDay,
         from_time: encodeURIComponent("08:00"),
         to_date: presentDay,
-        to_time: encodeURIComponent("17:59:59"),
+        to_time: encodeURIComponent("07:59"),
     };
     const { data, loading, error } = useProducts(params);
     useEffect(() => {
