@@ -88,7 +88,7 @@ const Product = ({ item, index, onDelete, isshowap = false }) => {
                     <p className="font-medium text-subtitle1">{index + 1}.</p>
                     <div className="px-3 py-2 rounded border border-gary_700 w-full bg-paper">
                         <h6 className="text-H6 font-medium mb-1">
-                            {item.product_name}
+                            {item.name || "Unknown name"}
                         </h6>
                         <div className="flex items-center gap-0.5">
                             <p className="text-body2">

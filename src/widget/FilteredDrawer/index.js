@@ -12,12 +12,19 @@ import { useTab } from "@/app/contexApi";
 import useArea from "@/app/hooks/useArea";
 import "react-calendar-datetime-picker/dist/style.css";
 import "react-modern-drawer/dist/index.css";
+import useUserList from "@/app/hooks/useUserList";
 
 const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
     const { data } = useGetDistrict();
     const { data: areaData } = useArea();
     const { isFilterData, setIsFilterData } = useTab();
+    const [search, setSearch] = React.useState("");
+    const params = {
+        search: search,
+        pagination: 5000,
+    };
 
+    const { data: user } = useUserList(params);
     const {
         control,
         handleSubmit,
@@ -119,6 +126,26 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
                                         multipleValu={false}
                                         onChange={(val) => field.onChange(val)}
                                         options={areaData?.data}
+                                        overlyClass="!bg-transparent"
+                                        inputClass="py-2  px-4 w-full rounded bg-white ring-gary_700 text-black bg-gray_500 text-body2 focus:ring-1 focus:ring-gary_700 focus:outline-none ring-1"
+                                    />
+                                )}
+                            />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <label className="font-semibold">Pharmacy</label>
+                            <Controller
+                                name="user"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select
+                                        {...field}
+                                        value={field.value}
+                                        placeholder="Select user"
+                                        multipleValu={false}
+                                        onChange={(val) => field.onChange(val)}
+                                        options={user?.data?.data}
+                                        onSearch={(val) => setSearch(val)}
                                         overlyClass="!bg-transparent"
                                         inputClass="py-2  px-4 w-full rounded bg-white ring-gary_700 text-black bg-gray_500 text-body2 focus:ring-1 focus:ring-gary_700 focus:outline-none ring-1"
                                     />

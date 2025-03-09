@@ -13,6 +13,7 @@ const Select = ({
     placeholder,
     inputClass,
     overlyClass,
+    onSearch,
 }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [isOpen, setIsOpen] = useState(false);
@@ -36,6 +37,11 @@ const Select = ({
             setSelectedValue(selectedValue.name);
             setIsOpen(false);
         }
+    };
+
+    const handleChange = (e) => {
+        setSearchTerm(e.target.value);
+        onSearch(e.target.value);
     };
 
     return (
@@ -102,7 +108,7 @@ const Select = ({
                         className="w-full px-4 py-2 border-b border-gary_700 focus:outline-none text-subtitle2 placeholder:text-subtitle2"
                         placeholder="Search..."
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e) => handleChange(e)}
                     />
                     <ul className="max-h-48 overflow-y-auto scrollbar">
                         {options

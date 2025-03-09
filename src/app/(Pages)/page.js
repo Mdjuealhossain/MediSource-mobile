@@ -6,21 +6,22 @@ import useProducts from "../hooks/useProducts";
 import Products from "@/widget/Products";
 import { useTab } from "../contexApi";
 import Tabs from "@/components/Tabs";
+import useAddPurchaseInfo from "../hooks/useAddPurchaseInfo";
 
 const Home = () => {
     const { isData, setIsData, isFilterData } = useTab();
-    const { presentDay, prevDay } = getFormattedDates(isFilterData?.date);
-    const params = {
-        district: isFilterData?.district?.id,
-        area: isFilterData?.area?.id,
-        percentage: 4,
+    const { presentDay } = getFormattedDates(isFilterData?.date);
+
+    const info = {
+        date: presentDay,
         pagination: 5000,
-        from_date: prevDay,
-        from_time: encodeURIComponent("08:00"),
-        to_date: presentDay,
-        to_time: encodeURIComponent("07:59"),
+        district: isFilterData?.district?.id,
+        area_id: isFilterData?.area?.id,
+        user_id: isFilterData?.user?.id,
     };
-    const { data, loading, error } = useProducts(params);
+
+    const { data } = useAddPurchaseInfo(info);
+
     useEffect(() => {
         setIsData(data?.data?.product_list);
     });
