@@ -123,7 +123,6 @@ const Product = ({ item, index, onDelete, isshowap = false }) => {
                     </p>
                 )}
             </div>
-
             <PurchaseModal
                 isOpen={isOpen}
                 openModal={openModal}

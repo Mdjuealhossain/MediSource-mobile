@@ -42,6 +42,7 @@ const LoginForm = () => {
             if (selectedCheckbox) {
                 localStorage.setItem("rememberMe", true);
             }
+            console.log("responseData", responseData);
 
             if (responseData.data.otp) {
                 setMessage(responseData.message);

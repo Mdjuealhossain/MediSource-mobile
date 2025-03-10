@@ -1,17 +1,17 @@
 import { useApi } from "./useApi";
 
-const useSignIn = () => {
+const useStorPurchase = () => {
     const { apiRequest } = useApi();
 
-    const signIn = async (userData) => {
+    const purchases = async (userData) => {
         return await apiRequest({
-            endpoint: "/admin-login",
+            endpoint: "/store-purchase",
             method: "POST",
             data: userData,
         });
     };
 
-    return { signIn };
+    return { purchases };
 };
 
-export default useSignIn;
+export default useStorPurchase;
