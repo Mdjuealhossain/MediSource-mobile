@@ -5,8 +5,36 @@ import { useForm } from "react-hook-form";
 const PurchaseModal = ({ data, isOpen, closeModal }) => {
     const { register, handleSubmit, reset } = useForm();
     const { purchases } = useStorPurchase();
+
+    const getCurrentDate = () => {
+        const date = new Date();
+        return date.toISOString().split("T")[0];
+    };
+
     const onSubmit = async (formData) => {
-        const { loading, success, error, responseData } = await purchases();
+        // const finalFormData = {
+        //     order_date: getCurrentDate(),
+        //     district_id: "1",
+        //     product_ids: data.id,
+        //     quantities: data.quantities,
+        //     buying_price: data.buying_price,
+        //     product_type: data.product_type,
+        //     total_sale: "0",
+        //     stock_item_amount: "0",
+        //     short_item: "0",
+        //     return: "0",
+        //     total_delivery: "0",
+        //     total_order: "0",
+        //     purchase_sum: "0",
+        //     expense_amount: "0",
+        //     expense_description: "",
+        //     profit: "0",
+        //     is_dr: "1",
+        //     high_low: "high",
+        // };
+        const { loading, success, error, responseData } = await purchases(
+            finalFormData
+        );
         console.log("responseData", responseData);
         reset();
         closeModal();
@@ -20,7 +48,7 @@ const PurchaseModal = ({ data, isOpen, closeModal }) => {
         } catch (error) {
             console.log("Something went wrong. Please try again.");
         } finally {
-            alert("Purchase Added Successfully");
+            console.log("Purchase Added Successfully");
         }
     };
 

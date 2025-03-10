@@ -21,7 +21,7 @@ const Products = ({ products, isshowap }) => {
     }
 
     return (
-        <div className="space-y-1">
+        <div className="space-y-2">
             {items.map((product, index) => (
                 <Product
                     key={product.product_id}

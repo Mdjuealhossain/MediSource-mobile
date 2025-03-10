@@ -24,7 +24,7 @@ const Home = () => {
     const { data } = useAddPurchaseInfo(info);
     const { data: purchases, loading, error } = usePurchaseHistory();
 
-    // console.log("purchases----", purchases?.data?.data[0]?.purchase_details);
+    console.log("purchases----", data?.data?.product_list);
 
     useEffect(() => {
         if (activeTab === 1) {
