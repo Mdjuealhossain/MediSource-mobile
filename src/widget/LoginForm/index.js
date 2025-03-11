@@ -51,7 +51,7 @@ const LoginForm = () => {
 
                 console.log("first", responseData?.data?.token);
                 setTimeout(() => {
-                    router.push("/gcfhcvh");
+                    router.push("/");
                 }, 2000);
             } else {
                 setMessage(responseData.message);
