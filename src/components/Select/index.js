@@ -41,7 +41,9 @@ const Select = ({
 
     const handleChange = (e) => {
         setSearchTerm(e.target.value);
-        onSearch(e.target.value);
+        if (onSearch) {
+            onSearch(e.target.value);
+        }
     };
 
     return (
