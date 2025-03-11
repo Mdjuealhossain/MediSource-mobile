@@ -44,10 +44,12 @@ const LoginForm = () => {
             }
 
             console.log("responseData", responseData);
-            if (responseData?.data?.token && responseData?.status) {
+            if (responseData?.data.token) {
                 setMessage(responseData.message);
                 setSuccess(true);
                 openModal();
+
+                console.log("first", responseData?.data?.token);
                 setTimeout(() => {
                     router.push("/");
                 }, 2000);
