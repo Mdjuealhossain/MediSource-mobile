@@ -21,7 +21,8 @@ const LoginForm = () => {
     const { isOpen, openModal, closeModal } = useModal();
     const { signIn } = useSignIn();
     const router = useRouter();
-    const [loading, setLoading] = useState(false); // Loading state
+    const [loading, setLoading] = useState(false);
+    // Loading state
 
     const {
         register,
@@ -42,7 +43,6 @@ const LoginForm = () => {
             if (selectedCheckbox) {
                 localStorage.setItem("rememberMe", true);
             }
-
             console.log("responseData", responseData);
             if (responseData?.data.token) {
                 setMessage(responseData.message);
@@ -51,7 +51,7 @@ const LoginForm = () => {
 
                 console.log("first", responseData?.data?.token);
                 setTimeout(() => {
-                    router.push("/");
+                    router.push("/gcfhcvh");
                 }, 2000);
             } else {
                 setMessage(responseData.message);
@@ -183,7 +183,6 @@ const LoginForm = () => {
                     </div>
                 </div>
             </form>
-
             {/* alart Modal */}
             <AlartModal
                 isOpen={isOpen && message}

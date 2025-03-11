@@ -96,9 +96,7 @@ const Product = ({ item, index, onDelete, isshowap = false }) => {
             is_dr: "1",
             high_low: "high",
         };
-        const { loading, success, error, responseData } = await purchases(
-            finalFormData
-        );
+
         console.log("responseData", responseData);
         reset();
         closeModal();
@@ -179,7 +177,6 @@ const Product = ({ item, index, onDelete, isshowap = false }) => {
                         </form>
                     </div>
                 </div>
-
                 {deleteButtonVisible && (
                     <p className="text-subtitle2 text-red-600 font-semibold mr-8">
                         Short
