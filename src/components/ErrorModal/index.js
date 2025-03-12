@@ -26,20 +26,20 @@ const AlartModal = ({
             {isOpen && (
                 <div className=" fixed inset-0 flex items-center justify-center z-30">
                     <div
-                        className="fixed inset-0 bg-[#0006] dark:bg-white/20"
+                        className="fixed inset-0 bg-[rgba(0,0,0,.4)]"
                         onClick={closeModal}
                     ></div>
-                    <div className=" px-6 py-12 bg-white z-50 rounded-2xl w-[250px]">
+                    <div className=" px-4 py-6 bg-white z-50 rounded-lg w-[180px]">
                         <div className=" flex items-center justify-center mb-4">
                             <Image
                                 src={image}
                                 height={64}
                                 width={64}
                                 alt="confirm"
-                                className=" h-10 w-10"
+                                className=" h-8 w-8"
                             />
                         </div>
-                        <h6 className=" text-H6 text-center font-bold text-warning_main leading-7">
+                        <h6 className=" text-subtitle1 text-center font-semibold leading-5 text-warning_main">
                             {message}
                         </h6>
                     </div>

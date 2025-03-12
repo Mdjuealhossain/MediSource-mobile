@@ -2,10 +2,21 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import useModal from "@/app/hooks/useModal";
-import PurchaseModal from "./PurcheaseModal";
 import useStorPurchase from "@/app/hooks/useStorPurchase";
+import { useTab } from "@/app/contexApi";
+import { getFormattedDates } from "@/app/utilities/getFormattedDates";
+import { appendIfValid } from "@/app/utilities/appendIfValid";
+import AlartModal from "../ErrorModal";
+import { useRouter } from "next/navigation";
 
-const Product = ({ item, index, onDelete, isshowap = false }) => {
+const Product = ({
+    item,
+    index,
+    onDelete,
+    isshowap = false,
+    storPurchase = {},
+    type = "",
+}) => {
     const { isOpen, openModal, closeModal } = useModal();
     const [swipePosition, setSwipePosition] = useState(0);
     const [isSwiping, setIsSwiping] = useState(false);
@@ -14,10 +25,10 @@ const Product = ({ item, index, onDelete, isshowap = false }) => {
     const { register, handleSubmit, reset } = useForm();
     const { purchases } = useStorPurchase();
 
-    // swipe system will only work if isshowap is true
+    const route = useRouter();
+
     const handleTouchStart = (e) => {
         if (isshowap) {
-            // Only work if isshowap is true
             setIsSwiping(true);
             setStartX(e.touches[0].clientX);
         }
@@ -74,43 +85,47 @@ const Product = ({ item, index, onDelete, isshowap = false }) => {
 
     const rate = item.rate - (item.rate * 4) / 100;
     const amount = rate * item.total_qty;
-
     const onSubmit = async (formData) => {
-        const finalFormData = {
-            order_date: getCurrentDate(),
-            district_id: "1",
-            product_ids: data.id,
-            quantities: data.quantities,
-            buying_price: data.buying_price,
-            product_type: data.product_type,
-            total_sale: "0",
-            stock_item_amount: "0",
-            short_item: "0",
-            return: "0",
-            total_delivery: "0",
-            total_order: "0",
-            purchase_sum: "0",
-            expense_amount: "0",
-            expense_description: "",
-            profit: "0",
-            is_dr: "1",
-            high_low: "high",
-        };
+        const postData = new FormData();
 
-        console.log("responseData", responseData);
-        reset();
-        closeModal();
+        // Destructure storPurchase and item to make the code more readable
+        const { date, district_id, total_amount } = storPurchase;
+        const { product_id, total_qty, product_type } = item;
+
+        // Append all values if they are valid
+        appendIfValid(postData, "order_date", date);
+        appendIfValid(postData, "district_id", district_id);
+        appendIfValid(postData, "total_sale", total_amount);
+        appendIfValid(
+            postData,
+            `buying_price[${product_id}]`,
+            formData.purchase
+        );
+        appendIfValid(postData, "product_ids[]", product_id);
+        appendIfValid(postData, `quantities[${product_id}]`, total_qty);
+        appendIfValid(postData, `product_type[${product_id}]`, product_type);
+        appendIfValid(postData, "stock_item_amount", "10");
+        appendIfValid(postData, "short_item", "0");
+        appendIfValid(postData, "return", "0");
+        appendIfValid(postData, "total_delivery", "10");
+        appendIfValid(postData, "total_order", null); // Will not append since null
+        appendIfValid(postData, "purchase_sum", null); // Will not append since null
+        appendIfValid(postData, "expense_amount", "0");
+        appendIfValid(postData, "expense_description", "");
+        appendIfValid(postData, "profit", null); // Will not append since null
+        appendIfValid(postData, "high_low", "high");
+
         try {
             const { loading, success, error, responseData } = await purchases(
-                formData
+                postData
             );
 
-            console.log("responseData", responseData);
             reset();
         } catch (error) {
-            console.log("Something went wrong. Please try again.");
+            console.log(error);
+            openModal();
         } finally {
-            console.log("Purchase Added Successfully");
+            console.log("onSubmit process finished.");
         }
     };
 
@@ -158,23 +173,27 @@ const Product = ({ item, index, onDelete, isshowap = false }) => {
                                 </p>
                             </div>
                         </div>
-                        <form
-                            onSubmit={handleSubmit(onSubmit)}
-                            className=" bg-white z-50 rounded-md flex items-center justify-center"
-                        >
-                            <input
-                                {...register("purchase", { required: true })}
-                                placeholder="Enter Purchase"
-                                className="text-subtitle2 placeholder:text-subtitle2 w-full outline-none focus:outline-none border rounded px-4 py-[4px]"
-                            />
-
-                            <button
-                                type="submit"
-                                className="text-body2 font-medium px-8 py-1 rounded-r text-white bg-success_main capitalize border"
+                        {type == "all" && (
+                            <form
+                                onSubmit={handleSubmit(onSubmit)}
+                                className=" bg-white z-50 rounded-md flex items-center justify-center"
                             >
-                                Add
-                            </button>
-                        </form>
+                                <input
+                                    {...register("purchase", {
+                                        required: true,
+                                    })}
+                                    placeholder="Enter Purchase"
+                                    className="text-subtitle2 placeholder:text-subtitle2 w-full outline-none focus:outline-none border rounded px-4 py-[4px]"
+                                />
+
+                                <button
+                                    type="submit"
+                                    className="text-body2 font-medium px-8 py-1 rounded-r text-white bg-success_main capitalize border"
+                                >
+                                    Add
+                                </button>
+                            </form>
+                        )}
                     </div>
                 </div>
                 {deleteButtonVisible && (
@@ -183,12 +202,6 @@ const Product = ({ item, index, onDelete, isshowap = false }) => {
                     </p>
                 )}
             </div>
-            {/* <PurchaseModal
-                isOpen={isOpen}
-                openModal={openModal}
-                closeModal={closeModal}
-                data={item}
-            /> */}
         </>
     );
 };

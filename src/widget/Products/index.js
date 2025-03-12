@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 
 import Product from "@/components/Product";
 
-const Products = ({ products, isshowap }) => {
+const Products = ({ products, isshowap, storPurchase, type }) => {
     const [items, setItems] = useState([]);
 
     useEffect(() => {
@@ -24,11 +24,13 @@ const Products = ({ products, isshowap }) => {
         <div className="space-y-2">
             {items.map((product, index) => (
                 <Product
+                    storPurchase={storPurchase}
                     key={product.product_id}
                     item={product}
                     index={index}
                     onDelete={handleDelete}
                     isshowap={isshowap}
+                    type={type}
                 />
             ))}
         </div>

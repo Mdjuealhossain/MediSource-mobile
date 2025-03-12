@@ -49,7 +49,6 @@ const LoginForm = () => {
                 setSuccess(true);
                 openModal();
 
-                console.log("first", responseData?.data?.token);
                 setTimeout(() => {
                     router.push("/");
                 }, 2000);

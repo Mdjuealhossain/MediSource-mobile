@@ -29,29 +29,37 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
         control,
         handleSubmit,
         formState: { errors },
+        reset, // <-- Add this line to access reset function
     } = useForm({
         defaultValues: {
             district: null,
             area: null,
             date: null,
+            user: null,
         },
     });
 
+    const [formState, setFormState] = React.useState(null); // <-- Store form state
+
     useEffect(() => {
-        if (isOpen) {
-            document.body.classList.add("overflow-hidden");
-        } else {
-            document.body.classList.remove("overflow-hidden");
+        if (isOpen && formState) {
+            reset(formState); // <-- Restore form values when the drawer is opened
         }
-        return () => {
-            document.body.classList.remove("overflow-hidden");
-        };
-    }, [isOpen]);
+    }, [isOpen, formState, reset]);
 
     const onSubmit = (data) => {
         setIsFilterData(data);
+        setFormState(data); // <-- Store form state on submit
         toggleDrawer();
     };
+
+    useEffect(() => {
+        if (!isOpen) {
+            setFormState(null); // Reset form state when drawer is closed, but form won't reset
+        }
+    }, [isOpen]);
+
+    console.log("isFilterData----", isFilterData);
 
     if (!isOpen) return null;
 
@@ -60,7 +68,7 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
             open={isOpen}
             onClose={toggleDrawer}
             direction={direction}
-            className=" !w-[80%]"
+            className="!w-[80%]"
         >
             <div className="h-full bg-secondary_bg">
                 <div className="bg-white mb-4">

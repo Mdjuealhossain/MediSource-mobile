@@ -13,6 +13,9 @@ const Home = () => {
     const { isData, setIsData, isFilterData, activeTab } = useTab();
     const { presentDay } = getFormattedDates(isFilterData?.date);
 
+    const date = new Date();
+    const today = date.toISOString().split("T")[0];
+
     const info = {
         date: presentDay,
         pagination: 5000,
@@ -22,9 +25,13 @@ const Home = () => {
     };
 
     const { data } = useAddPurchaseInfo(info);
-    const { data: purchases, loading, error } = usePurchaseHistory();
-
-    console.log("purchases----", data?.data?.product_list);
+    // const { data: purchases, loading, error } = usePurchaseHistory();
+    const purchases = data?.data?.product_list.filter(
+        (item) => item.buying_price > 0
+    );
+    const all = data?.data?.product_list.filter(
+        (item) => item.buying_price < 1
+    );
 
     useEffect(() => {
         if (activeTab === 1) {
@@ -35,20 +42,41 @@ const Home = () => {
         // }
     }, []);
 
+    const storPurchase = {
+        date: data?.data?.date,
+        district_id: data?.data?.district,
+        total_amount: data?.data?.total_amount,
+    };
+
+    console.log("purchases----", purchases);
+
     return (
         <div className=" mt-4 px-4">
             <Tabs tabs={tabs?.data} contentClass={"md:mt-10 mt-6"}>
                 <div id={1}>
-                    <Products
-                        isshowap={true}
-                        products={data?.data?.product_list}
-                    />
+                    {isFilterData?.district?.id &&
+                    isFilterData?.area?.id &&
+                    isFilterData?.area?.id ? (
+                        <Products
+                            isshowap={true}
+                            products={all}
+                            storPurchase={storPurchase}
+                            type="all"
+                        />
+                    ) : (
+                        <h6 className=" py-12 text-center text-H5 font-semibold text-black/20">
+                            Please select date and district
+                        </h6>
+                    )}
                 </div>
                 <div id={2}>
-                    <Products
-                        isshowap={true}
-                        products={purchases?.data?.data[0]?.purchase_details}
-                    />
+                    {purchases && purchases.length > 0 ? (
+                        <Products products={purchases} />
+                    ) : (
+                        <h6 className=" py-12 text-center text-H5 font-semibold text-black/20">
+                            Please select date and district
+                        </h6>
+                    )}
                 </div>
             </Tabs>
         </div>
