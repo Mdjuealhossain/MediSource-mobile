@@ -44,17 +44,17 @@ const Home = () => {
 
     console.log("activeTab", activeTab);
 
-    // useEffect(() => {
-    //     if (activeTab === 1) {
-    //         setIsData(all);
-    //     }
-    //     if (activeTab === 2) {
-    //         setIsData(purchases);
-    //     }
-    //     if (activeTab === 3) {
-    //         setIsData(short);
-    //     }
-    // }, [activeTab, data]);
+    useEffect(() => {
+        if (activeTab === "") {
+            setIsData(all);
+        }
+        if (activeTab === "purchase") {
+            setIsData(purchases);
+        }
+        if (activeTab === 3) {
+            // setIsData(short);
+        }
+    }, [activeTab, data]);
 
     const storPurchase = {
         date: data?.data?.date,
@@ -77,9 +77,7 @@ const Home = () => {
                                     ? false
                                     : true
                             }
-                            products={
-                                activeTab == "" ? all : data?.data?.product_list
-                            }
+                            products={activeTab == "purchase" ? purchases : all}
                             storPurchase={storPurchase}
                             IsAdd={content.value == "purchase" ? false : true}
                             type={activeTab == "purchase" ? "purchases" : ""}
