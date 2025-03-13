@@ -59,14 +59,14 @@ const Nav = () => {
         }
     }, [isSearch]);
 
-    const totalAmountSum =
-        isData &&
-        isData.reduce(
-            (sum, product) =>
-                sum +
-                (product.rate - (product.rate * 4) / 100) * product.total_qty,
-            0
-        );
+    // const totalAmountSum =
+    //     isData &&
+    //     isData.reduce(
+    //         (sum, product) =>
+    //             sum +
+    //             (product.rate - (product.rate * 4) / 100) * product.total_qty,
+    //         0
+    //     );
 
     return (
         <>
@@ -81,9 +81,9 @@ const Nav = () => {
                             isSearch ? "hidden" : "inline-block"
                         } text-subtitle1`}
                     >
-                        {"Total Order"} =
+                        {"Total Purchase"} =
                         <span className="font-semibold pl-1">
-                            {parseFloat((totalAmountSum || 0).toFixed(2))}
+                            {parseFloat((isData || 0).toFixed(2))}
                         </span>
                     </p>
 

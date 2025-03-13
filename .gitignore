@@ -13,9 +13,16 @@
 # testing
 /coverage
 
+
 # next.js
 /.next/
 /out/
+
+# Ignore VSCode settings folder
+.vscode/
+
+# Ignore Prettier config file
+.prettierrc
 
 # production
 /build

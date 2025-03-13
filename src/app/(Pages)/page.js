@@ -1,15 +1,14 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { getFormattedDates } from "../utilities/getFormattedDates";
-import useProducts from "../hooks/useProducts";
 import Products from "@/widget/Products";
 import { useTab } from "../contexApi";
 import Tabs from "@/components/Tabs";
 import useAddPurchaseInfo from "../hooks/useAddPurchaseInfo";
-import usePurchaseHistory from "../hooks/usePurchaseHistory";
 
 const Home = () => {
+    const [isSpecial, setIsSpecial] = useState(false);
     const { isData, setIsData, isFilterData, activeTab, isPurchase } = useTab();
     const { presentDay } = getFormattedDates(isFilterData?.date);
 
@@ -19,40 +18,21 @@ const Home = () => {
     const info = {
         date: presentDay || today,
         pagination: 5000,
-        district: isFilterData?.district?.id,
-        area_id: isFilterData?.area?.id,
+        district: isFilterData?.district?.id || "1",
+        area_id: isFilterData?.area?.id || "9",
         user_id: isFilterData?.user?.id,
-        product_type:
-            (activeTab == "purchase" || activeTab == "short") && activeTab,
-        is_dr: activeTab == "1" && activeTab,
-        high_low: (activeTab == "high" || activeTab == "low") && activeTab,
     };
 
     const { data } = useAddPurchaseInfo(info, isPurchase);
-
-    // const { data: purchases, loading, error } = usePurchaseHistory();
-    const purchases = data?.data?.product_list?.filter(
-        (item) => item.buying_price > 0
-    );
-    const all = data?.data?.product_list?.filter(
-        (item) => item.buying_price < 1
-    );
-
-    const short = data?.data?.product_list?.filter(
-        (item) => item.product_type == "short"
-    );
-
-    console.log("activeTab", activeTab);
+    const purchases = data?.data?.product_list?.filter((item) => item.buying_price > 0);
+    const all = data?.data?.product_list?.filter((item) => item.buying_price < 1);
+    const high = purchases?.filter((item) => item.total_amount < item.buying_price);
+    const low = purchases?.filter((item) => item.total_amount > item.buying_price);
+    const purcgaseTotalAmountSum = purchases?.reduce((sum, product) => sum + product.buying_price * product.total_qty, 0);
 
     useEffect(() => {
-        if (activeTab === "") {
-            setIsData(all);
-        }
         if (activeTab === "purchase") {
-            setIsData(purchases);
-        }
-        if (activeTab === 3) {
-            // setIsData(short);
+            setIsData(purcgaseTotalAmountSum);
         }
     }, [activeTab, data]);
 
@@ -62,87 +42,53 @@ const Home = () => {
         total_amount: data?.data?.total_amount,
     };
 
-    console.log("data", data);
+    // ✅ Fixing isSpecial state update and console log issue
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const storedPhone = localStorage.getItem("phoneNumber");
+
+            if (storedPhone && ["01854673267", "12345678910"].includes(storedPhone)) {
+                setIsSpecial(true);
+            }
+        }
+    }, []);
+
+    console.log("isSpecial----", isSpecial);
 
     return (
         <div className=" my-4 px-4">
-            <Tabs tabs={tabs?.data} contentClass={"md:mt-10 mt-6"}>
-                {tabs?.data.map((content) => (
-                    <div key={content.id} value={`${content.value}`}>
-                        <Products
-                            isshowap={
-                                content.value == "purchase"
-                                    ? false
-                                    : content.value == "short"
-                                    ? false
-                                    : true
-                            }
-                            products={activeTab == "purchase" ? purchases : all}
-                            storPurchase={storPurchase}
-                            IsAdd={content.value == "purchase" ? false : true}
-                            type={activeTab == "purchase" ? "purchases" : ""}
-                        />
-                    </div>
-                ))}
-                {/* <div value="purchase">
-                    {purchases && purchases.length > 0 ? (
-                        <Products products={purchases} type="purchases" />
-                    ) : (
-                        <h6 className=" py-12 text-center text-H5 font-semibold text-black/20">
-                            Please select date and district
-                        </h6>
-                    )}
-                </div> */}
-                {/* <div id={1}>
-                    {isFilterData?.district?.id && isFilterData?.area?.id ? (
-                        <Products
-                            isshowap={true}
-                            products={all}
-                            storPurchase={storPurchase}
-                            IsAdd={true}
-                        />
-                    ) : (
-                        <h6 className=" py-12 text-center text-H5 font-semibold text-black/20">
-                            Please select date and district
-                        </h6>
-                    )}
-                </div> */}
-                {/* <div id={2}>
-                    {purchases && purchases.length > 0 ? (
-                        <Products products={purchases} type="purchases" />
-                    ) : (
-                        <h6 className=" py-12 text-center text-H5 font-semibold text-black/20">
-                            Please select date and district
-                        </h6>
-                    )}
-                </div> */}
-                {/* <div id={3}>
-                    {isFilterData?.district?.id && isFilterData?.area?.id ? (
-                        <Products
-                            isshowap={true}
-                            products={short}
-                            storPurchase={storPurchase}
-                            IsAdd={true}
-                        />
-                    ) : (
-                        <h6 className=" py-12 text-center text-H5 font-semibold text-black/20">
-                            Please select date and district
-                        </h6>
-                    )}
-                </div> */}
+            <Tabs tabs={isSpecial ? tabsPhone?.data : tabs?.data} contentClass={"md:mt-10 mt-6"}>
+                {!isSpecial
+                    ? tabs?.data.map((content) => (
+                          <div key={content.id} value={`${content.value}`}>
+                              <Products products={activeTab === "purchase" ? purchases : activeTab === "high" ? high : activeTab === "low" ? low : activeTab === "1" ? [] : all} storPurchase={storPurchase} IsAdd={content.value === ""} type={activeTab} />
+                          </div>
+                      ))
+                    : tabsPhone?.data.map((content) => (
+                          <div key={content.id} value={`${content.value}`}>
+                              <Products isSpecial={isSpecial} products={activeTab === "purchase" ? purchases : activeTab === "high" ? high : activeTab === "low" ? low : all} storPurchase={storPurchase} IsAdd={content.value === ""} type={activeTab} />
+                          </div>
+                      ))}
             </Tabs>
         </div>
     );
 };
 
 export default Home;
+
 const tabs = {
     data: [
         { id: 1, value: "", name: "All" },
         { id: 2, value: "purchase", name: "Purchase" },
-        { id: 3, value: "short", name: "Short" },
         { id: 4, value: "1", name: "D-R" },
         { id: 5, value: "high", name: "High" },
         { id: 6, value: "low", name: "Low" },
+    ],
+};
+const tabsPhone = {
+    data: [
+        { id: 1, value: "", name: "All" },
+        { id: 2, value: "purchase", name: "Purchase" },
+        { id: 4, value: "1", name: "D-R" },
     ],
 };

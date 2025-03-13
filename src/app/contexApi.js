@@ -9,6 +9,7 @@ export function ProductProvider({ children }) {
     const [isData, setIsData] = useState(null);
     const [isFilterData, setIsFilterData] = useState({});
     const [isPurchase, setIsPurchase] = useState(false);
+    const [dontReceived, setDontReceived] = useState([]);
 
     return (
         <ProductContext.Provider
@@ -21,6 +22,8 @@ export function ProductProvider({ children }) {
                 setIsFilterData,
                 isPurchase,
                 setIsPurchase,
+                dontReceived,
+                setDontReceived,
             }}
         >
             {children}
