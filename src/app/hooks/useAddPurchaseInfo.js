@@ -10,7 +10,16 @@ const useAddPurchaseInfo = (params = {}, isPurchase) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const { district, date, area_id, user_id, pagination } = params;
+    const {
+        district,
+        date,
+        area_id,
+        user_id,
+        pagination,
+        product_type,
+        is_dr,
+        high_low,
+    } = params;
 
     const queryString = buildQueryParams(params);
 
@@ -45,7 +54,17 @@ const useAddPurchaseInfo = (params = {}, isPurchase) => {
     // Trigger fetch when any of these params change
     useEffect(() => {
         fetchProducts();
-    }, [district, date, area_id, user_id, pagination, isPurchase]);
+    }, [
+        district,
+        date,
+        area_id,
+        user_id,
+        pagination,
+        isPurchase,
+        product_type,
+        is_dr,
+        high_low,
+    ]);
 
     return { data, loading, error };
 };

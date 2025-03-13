@@ -27,7 +27,7 @@ const Product = ({
     const { purchases } = useStorPurchase();
     const { isPurchase, setIsPurchase } = useTab();
 
-    console.log("isPurchase----", isPurchase);
+    console.log("type-------", type);
 
     const handleTouchStart = (e) => {
         if (isshowap) {

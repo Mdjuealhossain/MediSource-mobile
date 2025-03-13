@@ -7,7 +7,7 @@ const Tabs = ({ tabs = [], children, tabContainerClass, contentClass }) => {
 
     useEffect(() => {
         if (!activeTab && tabs.length > 0) {
-            setActiveTab(tabs[0]?.id);
+            setActiveTab(tabs[0]?.value);
         }
     }, [activeTab, setActiveTab, tabs]);
 
@@ -20,9 +20,9 @@ const Tabs = ({ tabs = [], children, tabContainerClass, contentClass }) => {
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
+                            onClick={() => setActiveTab(tab.value)}
                             className={`py-1.5 px-3 w-[72px] capitalize font-medium cursor-pointer text-subtitle2 flex items-center justify-center rounded-md border border-success_main transition-all duration-400 focus:outline-none ${
-                                activeTab === tab.id
+                                activeTab === tab.value
                                     ? "bg-success_main hover:bg-success_dark text-white"
                                     : "bg-white text-primary"
                             }`}
@@ -34,7 +34,7 @@ const Tabs = ({ tabs = [], children, tabContainerClass, contentClass }) => {
             </div>
             <div className={`${contentClass}`}>
                 {React.Children.map(children, (child) =>
-                    child.props.id === activeTab ? child : null
+                    child.props.value === activeTab ? child : null
                 )}
             </div>
         </div>
