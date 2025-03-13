@@ -16,6 +16,7 @@ const Product = ({
     isshowap = false,
     storPurchase = {},
     type = "",
+    IsAdd,
 }) => {
     const { isOpen, openModal, closeModal } = useModal();
     const [swipePosition, setSwipePosition] = useState(0);
@@ -24,8 +25,9 @@ const Product = ({
     const swipeThreshold = 100;
     const { register, handleSubmit, reset } = useForm();
     const { purchases } = useStorPurchase();
+    const { isPurchase, setIsPurchase } = useTab();
 
-    const route = useRouter();
+    console.log("isPurchase----", isPurchase);
 
     const handleTouchStart = (e) => {
         if (isshowap) {
@@ -74,7 +76,7 @@ const Product = ({
             // Only work if isshowap is true
             setIsSwiping(false);
             if (swipePosition < -swipeThreshold) {
-                onDelete(item.product_id); // Delete item
+                onDelete(item.product_id);
             }
 
             setTimeout(() => setSwipePosition(0), 200);
@@ -119,6 +121,9 @@ const Product = ({
             const { loading, success, error, responseData } = await purchases(
                 postData
             );
+            if (success) {
+                setIsPurchase((prev) => !prev);
+            }
 
             reset();
         } catch (error) {
@@ -159,7 +164,16 @@ const Product = ({
                                 <p className="text-body2">
                                     R:
                                     <span className="font-semibold pl-1">
-                                        {parseFloat((rate || 0).toFixed(1))}
+                                        {type == "purchases"
+                                            ? parseFloat(
+                                                  (
+                                                      item.buying_price /
+                                                          item.total_qty || 0
+                                                  ).toFixed(1)
+                                              )
+                                            : parseFloat(
+                                                  (rate || 0).toFixed(1)
+                                              )}
                                         TK
                                     </span>
                                 </p>
@@ -167,13 +181,21 @@ const Product = ({
                                 <p className="text-body2">
                                     A:
                                     <span className="font-semibold pl-1">
-                                        {parseFloat((amount || 0).toFixed(1))}
+                                        {type == "purchases"
+                                            ? parseFloat(
+                                                  (
+                                                      item.buying_price || 0
+                                                  ).toFixed(1)
+                                              )
+                                            : parseFloat(
+                                                  (amount || 0).toFixed(1)
+                                              )}
                                         TK
                                     </span>
                                 </p>
                             </div>
                         </div>
-                        {type == "all" && (
+                        {IsAdd && (
                             <form
                                 onSubmit={handleSubmit(onSubmit)}
                                 className=" bg-white z-50 rounded-md flex items-center justify-center"
@@ -183,7 +205,7 @@ const Product = ({
                                         required: true,
                                     })}
                                     placeholder="Enter Purchase"
-                                    className="text-subtitle2 placeholder:text-subtitle2 w-full outline-none focus:outline-none border rounded px-4 py-[4px]"
+                                    className="text-subtitle2 placeholder:text-subtitle2 w-full outline-none focus:outline-none border rounded-l px-4 py-[4px]"
                                 />
 
                                 <button

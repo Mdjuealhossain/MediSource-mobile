@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 
 import Product from "@/components/Product";
 
-const Products = ({ products, isshowap, storPurchase, type }) => {
+const Products = ({ products, isshowap, storPurchase, type, IsAdd }) => {
     const [items, setItems] = useState([]);
 
     useEffect(() => {
@@ -31,6 +31,7 @@ const Products = ({ products, isshowap, storPurchase, type }) => {
                     onDelete={handleDelete}
                     isshowap={isshowap}
                     type={type}
+                    IsAdd={IsAdd}
                 />
             ))}
         </div>

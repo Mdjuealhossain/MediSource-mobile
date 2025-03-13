@@ -8,6 +8,7 @@ export function ProductProvider({ children }) {
     const [activeTab, setActiveTab] = useState(null);
     const [isData, setIsData] = useState(null);
     const [isFilterData, setIsFilterData] = useState({});
+    const [isPurchase, setIsPurchase] = useState(false);
 
     return (
         <ProductContext.Provider
@@ -18,6 +19,8 @@ export function ProductProvider({ children }) {
                 setIsData,
                 isFilterData,
                 setIsFilterData,
+                isPurchase,
+                setIsPurchase,
             }}
         >
             {children}

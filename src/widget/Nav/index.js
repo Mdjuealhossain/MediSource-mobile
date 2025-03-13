@@ -103,7 +103,7 @@ const Nav = () => {
                         <span
                             className={`${
                                 isSearch ? "hidden" : "inline-block"
-                            }`}
+                            } cursor-pointer`}
                             onClick={openSearch} // Show search input when icon is clicked
                         >
                             <MdOutlineSearch size={24} />
