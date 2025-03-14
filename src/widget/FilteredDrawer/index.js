@@ -8,11 +8,12 @@ import { IoMdClose } from "react-icons/io";
 import Select from "@/components/Select";
 
 import useGetDistrict from "@/app/hooks/useDistrict";
+import { clearCookie } from "@/app/utilities/cookies";
+import useUserList from "@/app/hooks/useUserList";
 import { useTab } from "@/app/contexApi";
 import useArea from "@/app/hooks/useArea";
 import "react-calendar-datetime-picker/dist/style.css";
 import "react-modern-drawer/dist/index.css";
-import useUserList from "@/app/hooks/useUserList";
 
 const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
     const { data } = useGetDistrict();
@@ -41,11 +42,12 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
 
     const [formState, setFormState] = React.useState(null); // <-- Store form state
 
-    useEffect(() => {
-        if (isOpen && formState) {
-            reset(formState); // <-- Restore form values when the drawer is opened
-        }
-    }, [isOpen, formState, reset]);
+    // useEffect(() => {
+    //     if (isOpen && formState) {
+    //         reset(formState); // <-- Restore form values when the drawer is opened
+    //     }
+    // }, [isOpen, formState, reset]);
+    // if (!isOpen) return null;
 
     const onSubmit = (data) => {
         setIsFilterData(data);
@@ -59,9 +61,14 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
         }
     }, [isOpen]);
 
-    console.log("isFilterData----", isFilterData);
+    const logout = () => {
+        if (typeof window !== "undefined") {
+            localStorage.clear();
+            clearCookie("authToken"); // Replace "user" with your actual cookie name
 
-    if (!isOpen) return null;
+            window.location.href = "/login";
+        }
+    };
 
     return (
         <Drawer
@@ -168,6 +175,13 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
                         className="cursor-pointer w-full px-4 py-2 text-subtitle2 bg-success_main text-white rounded"
                     >
                         Search
+                    </button>
+                    <button
+                        type="button"
+                        onClick={logout}
+                        className="cursor-pointer w-full px-4 mt-4 py-2 text-subtitle2 bg-warning_main text-white rounded"
+                    >
+                        logout
                     </button>
                 </form>
             </div>
