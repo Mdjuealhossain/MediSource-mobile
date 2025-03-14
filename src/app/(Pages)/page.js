@@ -63,16 +63,12 @@ const Home = () => {
 
             if (
                 storedPhone &&
-                ["01854673267", "12345678910", "01770744899"].includes(
-                    storedPhone
-                )
+                ["01854673267", "12345678910"].includes(storedPhone)
             ) {
                 setIsSpecial(true);
             }
         }
     }, []);
-
-    console.log("isSpecial----", isSpecial);
 
     return (
         <div className=" my-4 px-4">
