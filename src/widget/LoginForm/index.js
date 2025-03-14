@@ -12,6 +12,7 @@ import { validationSchema } from "@/app/utilities/validationData";
 import AlartModal from "@/components/ErrorModal";
 import useSignIn from "@/app/hooks/useSignIn";
 import useModal from "@/app/hooks/useModal";
+import { redirect } from "next/navigation";
 
 const LoginForm = () => {
     const [selectedCheckbox, setSelectedCheckbox] = useState(false);
@@ -50,9 +51,7 @@ const LoginForm = () => {
                 openModal();
 
                 setTimeout(() => {
-                    // router.push("/");
-                    // router.replace("/");
-                    window.location.href = "/";
+                    redirect("/");
                 }, 2000);
             } else {
                 setMessage(responseData.message);
