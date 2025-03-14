@@ -51,7 +51,8 @@ const LoginForm = () => {
 
                 setTimeout(() => {
                     // router.push("/");
-                    router.replace("/");
+                    // router.replace("/");
+                    window.location.href = "/";
                 }, 2000);
             } else {
                 setMessage(responseData.message);
