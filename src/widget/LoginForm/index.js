@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { FaStarOfLife } from "react-icons/fa";
 import { IoEyeSharp, IoEyeOff } from "react-icons/io5";
 import { BsCheck } from "react-icons/bs";
@@ -12,7 +11,6 @@ import { validationSchema } from "@/app/utilities/validationData";
 import AlartModal from "@/components/ErrorModal";
 import useSignIn from "@/app/hooks/useSignIn";
 import useModal from "@/app/hooks/useModal";
-import { redirect } from "next/navigation";
 
 const LoginForm = () => {
     const [selectedCheckbox, setSelectedCheckbox] = useState(false);
@@ -21,7 +19,6 @@ const LoginForm = () => {
     const [success, setSuccess] = useState(false);
     const { isOpen, openModal, closeModal } = useModal();
     const { signIn } = useSignIn();
-    const router = useRouter();
     const [loading, setLoading] = useState(false);
     // Loading state
 
@@ -51,7 +48,7 @@ const LoginForm = () => {
                 openModal();
 
                 setTimeout(() => {
-                    redirect("/");
+                    window.location.href = "/";
                 }, 2000);
             } else {
                 setMessage(responseData.message);
