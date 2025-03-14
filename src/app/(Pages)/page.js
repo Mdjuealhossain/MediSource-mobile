@@ -63,7 +63,9 @@ const Home = () => {
 
             if (
                 storedPhone &&
-                ["01854673267", "12345678910"].includes(storedPhone)
+                ["01854673267", "12345678910", "01770744899"].includes(
+                    storedPhone
+                )
             ) {
                 setIsSpecial(true);
             }
@@ -136,7 +138,6 @@ const tabs = {
 };
 const tabsPhone = {
     data: [
-        { id: 1, value: "", name: "All" },
         { id: 2, value: "purchase", name: "Purchase" },
         { id: 4, value: "1", name: "D-R" },
     ],
