@@ -72,8 +72,10 @@ const Product = ({
         }
     };
 
+    console.log("item", item);
+
     const handleDontReceivedData = (data) => {
-        console.log("data", data);
+        // console.log("data", data);
         // setDontReceived((prev) => [...prev, data]); // নতুন ডাটা যোগ করা
     };
 
@@ -98,7 +100,7 @@ const Product = ({
                                 R:
                                 <span
                                     className={`font-semibold pl-1 ${
-                                        isSpecial ? " hidden" : "inline"
+                                        isSpecial ? "hidden" : "inline"
                                     }`}
                                 >
                                     {type == "purchase" ||
@@ -130,12 +132,20 @@ const Product = ({
                                         isSpecial ? " hidden" : "inline"
                                     }`}
                                 >
-                                    {parseFloat((amount || 0).toFixed(1))}
+                                    {type == "purchase" ||
+                                    type == "high" ||
+                                    type == "low"
+                                        ? parseFloat(
+                                              (item.buying_price || 0).toFixed(
+                                                  1
+                                              )
+                                          )
+                                        : parseFloat((amount || 0).toFixed(1))}
                                     TK
                                 </span>
                                 <span
                                     className={`font-semibold pl-1 ${
-                                        !isSpecial ? " hidden" : "inline"
+                                        !isSpecial ? "hidden" : "inline"
                                     }`}
                                 >
                                     {parseFloat(

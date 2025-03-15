@@ -40,12 +40,18 @@ const Home = () => {
         (item) => item.total_amount > item.buying_price
     );
     const purcgaseTotalAmountSum = purchases?.reduce(
-        (sum, product) => sum + product.buying_price * product.total_qty,
+        (sum, product) => sum + product.buying_price,
+        0
+    );
+    const purcgaseSpecialTotalAmountSum = purchases?.reduce(
+        (sum, product) => sum + product.total_amount,
         0
     );
 
     useEffect(() => {
-        if (activeTab === "purchase") {
+        if (isSpecial) {
+            setIsData(purcgaseSpecialTotalAmountSum);
+        } else {
             setIsData(purcgaseTotalAmountSum);
         }
     }, [activeTab, data]);
@@ -63,7 +69,7 @@ const Home = () => {
 
             if (
                 storedPhone &&
-                ["01854673267", "12345678910"].includes(storedPhone)
+                ["01854673267", "12345678910", ""].includes(storedPhone)
             ) {
                 setIsSpecial(true);
             }

@@ -11,7 +11,9 @@ const Nav = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { activeTab } = useTab();
     const [isSearch, setIsSearch] = useState(false);
-    const { isData, setIsData } = useTab();
+    const { isData } = useTab();
+
+    console.log("isData", isData);
 
     const searchRef = useRef(null);
 
