@@ -17,10 +17,10 @@ const Home = () => {
     const previousDay = date.toISOString().split("T")[0];
 
     const info = {
-        date: presentDate,
+        date: presentDate || previousDay,
         pagination: 5000,
         district: isFilterData?.district?.id || "1",
-        area_id: isFilterData?.area?.id || "9",
+        area_id: isFilterData?.area?.id,
         user_id: isFilterData?.user?.id,
     };
 

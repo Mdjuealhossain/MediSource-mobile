@@ -101,7 +101,7 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
                             <Controller
                                 name="date"
                                 control={control}
-                                render={({ field }) => <DtPicker {...field} value={field.value || defaultDate} onChange={(val) => field.onChange(val)} calendarType="US" placeholder="Select a date" inputClass="!py-2 !h-[34px] custom-input !px-4 w-full rounded bg-white ring-gary_700 text-black bg-gray_500 text-body2 focus:ring-1 focus:ring-gary_700 focus:outline-none ring-1" />}
+                                render={({ field }) => <DtPicker {...field} value={field.value} defaultValue={defaultDate} onChange={(val) => field.onChange(val)} calendarType="US" placeholder="Select a date" inputClass="!py-2 !h-[34px] custom-input !px-4 w-full rounded bg-white ring-gary_700 text-black bg-gray_500 text-body2 focus:ring-1 focus:ring-gary_700 focus:outline-none ring-1" />}
                             />
                         </div>
                         {/* District Select */}
