@@ -27,26 +27,15 @@ const Home = () => {
     };
 
     const { data } = useAddPurchaseInfo(info, isPurchase);
-    const purchases = data?.data?.product_list?.filter(
-        (item) => item.buying_price > 0
-    );
-    const all = data?.data?.product_list?.filter(
-        (item) => item.buying_price < 1
-    );
-    const high = purchases?.filter(
-        (item) => item.total_amount < item.buying_price
-    );
-    const low = purchases?.filter(
-        (item) => item.total_amount > item.buying_price
-    );
-    const purcgaseTotalAmountSum = purchases?.reduce(
-        (sum, product) => sum + product.buying_price,
-        0
-    );
-    const purcgaseSpecialTotalAmountSum = purchases?.reduce(
-        (sum, product) => sum + product.total_amount,
-        0
-    );
+    const purchases = data?.data?.product_list?.filter((item) => item.buying_price > 0);
+    const all = data?.data?.product_list?.filter((item) => item.buying_price < 1);
+    const high = purchases?.filter((item) => item.total_amount < item.buying_price);
+    const low = purchases?.filter((item) => item.total_amount > item.buying_price);
+
+    console.log("low-----", low);
+    console.log("high-----", high);
+    const purcgaseTotalAmountSum = purchases?.reduce((sum, product) => sum + product.buying_price, 0);
+    const purcgaseSpecialTotalAmountSum = purchases?.reduce((sum, product) => sum + product.total_amount, 0);
 
     useEffect(() => {
         if (isSpecial) {
@@ -67,10 +56,7 @@ const Home = () => {
         if (typeof window !== "undefined") {
             const storedPhone = localStorage.getItem("phoneNumber");
 
-            if (
-                storedPhone &&
-                ["01854673267", "12345678910", ""].includes(storedPhone)
-            ) {
+            if (storedPhone && ["01854673267", "12345678910", ""].includes(storedPhone)) {
                 setIsSpecial(true);
             }
         }
@@ -78,48 +64,16 @@ const Home = () => {
 
     return (
         <div className=" my-4 px-4">
-            <Tabs
-                tabs={isSpecial ? tabsPhone?.data : tabs?.data}
-                contentClass={"md:mt-10 mt-6"}
-            >
+            <Tabs tabs={isSpecial ? tabsPhone?.data : tabs?.data} contentClass={"md:mt-10 mt-6"}>
                 {!isSpecial
                     ? tabs?.data.map((content) => (
                           <div key={content.id} value={`${content.value}`}>
-                              <Products
-                                  products={
-                                      activeTab === "purchase"
-                                          ? purchases
-                                          : activeTab === "high"
-                                          ? high
-                                          : activeTab === "low"
-                                          ? low
-                                          : activeTab === "1"
-                                          ? []
-                                          : all
-                                  }
-                                  storPurchase={storPurchase}
-                                  IsAdd={content.value === ""}
-                                  type={activeTab}
-                              />
+                              <Products products={activeTab === "purchase" ? purchases : activeTab === "high" ? high : activeTab === "low" ? low : activeTab === "1" ? [] : all} storPurchase={storPurchase} IsAdd={content.value === ""} type={activeTab} />
                           </div>
                       ))
                     : tabsPhone?.data.map((content) => (
                           <div key={content.id} value={`${content.value}`}>
-                              <Products
-                                  isSpecial={isSpecial}
-                                  products={
-                                      activeTab === "purchase"
-                                          ? purchases
-                                          : activeTab === "high"
-                                          ? high
-                                          : activeTab === "low"
-                                          ? low
-                                          : all
-                                  }
-                                  storPurchase={storPurchase}
-                                  IsAdd={content.value === ""}
-                                  type={activeTab}
-                              />
+                              <Products isSpecial={isSpecial} products={activeTab === "purchase" ? purchases : activeTab === "high" ? high : activeTab === "low" ? low : all} storPurchase={storPurchase} IsAdd={content.value === ""} type={activeTab} />
                           </div>
                       ))}
             </Tabs>
