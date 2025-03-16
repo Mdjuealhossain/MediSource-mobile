@@ -69,7 +69,7 @@ const Nav = () => {
             <div>
                 <nav className={`flex items-center z-0 ${isSearch ? " justify-center" : " justify-between"} px-4 py-3 bg-success_main text-white`}>
                     <p className={`${isSearch ? "hidden" : "inline-block"} text-subtitle1`}>
-                        {"Total Send"} =<span className="font-semibold pl-1">{parseFloat((isData || 0).toFixed(2))}</span>
+                        {"Total Purchase"} =<span className="font-semibold pl-1">{parseFloat((isData || 0).toFixed(2))}</span>
                     </p>
 
                     {isSearch && (

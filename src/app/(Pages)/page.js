@@ -13,13 +13,11 @@ const Home = () => {
     const presentDate = getFormattedDate(isFilterData?.date);
 
     const date = new Date();
-    const today = date.toISOString().split("T")[0];
-    const formatDate = (date) => {
-        return date.toISOString().split("T")[0];
-    };
+    date.setDate(date.getDate() - 1);
+    const previousDay = date.toISOString().split("T")[0];
 
     const info = {
-        date: presentDate || today,
+        date: presentDate,
         pagination: 5000,
         district: isFilterData?.district?.id || "1",
         area_id: isFilterData?.area?.id || "9",
@@ -29,11 +27,10 @@ const Home = () => {
     const { data } = useAddPurchaseInfo(info, isPurchase);
     const purchases = data?.data?.product_list?.filter((item) => item.buying_price > 0);
     const all = data?.data?.product_list?.filter((item) => item.buying_price < 1);
-    const high = purchases?.filter((item) => item.total_amount < item.buying_price);
-    const low = purchases?.filter((item) => item.total_amount > item.buying_price);
+    const high = purchases?.filter((item) => item.buying_price > (item.rate - (item.rate * 4) / 100) * item.total_qty * 1.01);
 
-    console.log("low-----", low);
-    console.log("high-----", high);
+    const low = purchases?.filter((item) => item.buying_price < (item.rate - (item.rate * 4) / 100) * item.total_qty * 0.99);
+
     const purcgaseTotalAmountSum = purchases?.reduce((sum, product) => sum + product.buying_price, 0);
     const purcgaseSpecialTotalAmountSum = purchases?.reduce((sum, product) => sum + product.total_amount, 0);
 
