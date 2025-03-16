@@ -23,10 +23,7 @@ const Nav = () => {
 
     const item_catagories = tabContentas.find((data) => data.id == activeTab);
 
-    const calagory =
-        item_catagories?.catagory === "All"
-            ? "Total Order"
-            : item_catagories?.catagory || "All Category";
+    const calagory = item_catagories?.catagory === "All" ? "Total Order" : item_catagories?.catagory || "All Category";
 
     const openSearch = (e) => {
         e.preventDefault();
@@ -44,10 +41,7 @@ const Nav = () => {
         // Add event listener only when the search input is open
         if (isSearch) {
             const handleClickOutside = (e) => {
-                if (
-                    searchRef.current &&
-                    !searchRef.current.contains(e.target)
-                ) {
+                if (searchRef.current && !searchRef.current.contains(e.target)) {
                     setIsSearch(false); // Hide the search input if clicked outside
                 }
             };
@@ -73,20 +67,9 @@ const Nav = () => {
     return (
         <>
             <div>
-                <nav
-                    className={`flex items-center z-0 ${
-                        isSearch ? " justify-center" : " justify-between"
-                    } px-4 py-3 bg-success_main text-white`}
-                >
-                    <p
-                        className={`${
-                            isSearch ? "hidden" : "inline-block"
-                        } text-subtitle1`}
-                    >
-                        {"Total Purchase"} =
-                        <span className="font-semibold pl-1">
-                            {parseFloat((isData || 0).toFixed(2))}
-                        </span>
+                <nav className={`flex items-center z-0 ${isSearch ? " justify-center" : " justify-between"} px-4 py-3 bg-success_main text-white`}>
+                    <p className={`${isSearch ? "hidden" : "inline-block"} text-subtitle1`}>
+                        {"Total Send"} =<span className="font-semibold pl-1">{parseFloat((isData || 0).toFixed(2))}</span>
                     </p>
 
                     {isSearch && (
@@ -97,33 +80,20 @@ const Nav = () => {
                         />
                     )}
 
-                    <div
-                        className={`flex items-center gap-4 ${
-                            isSearch ? "hidden" : "inline-block"
-                        }`}
-                    >
+                    <div className={`flex items-center gap-4 ${isSearch ? "hidden" : "inline-block"}`}>
                         <span
-                            className={`${
-                                isSearch ? "hidden" : "inline-block"
-                            } cursor-pointer`}
+                            className={`${isSearch ? "hidden" : "inline-block"} cursor-pointer`}
                             onClick={openSearch} // Show search input when icon is clicked
                         >
                             <MdOutlineSearch size={24} />
                         </span>
-                        <span
-                            onClick={toggleDrawer}
-                            className=" cursor-pointer"
-                        >
+                        <span onClick={toggleDrawer} className=" cursor-pointer">
                             <BsFilterRight size={24} />
                         </span>
                     </div>
                 </nav>
             </div>
-            <FilteredDrawer
-                isOpen={isOpen}
-                toggleDrawer={toggleDrawer}
-                direction="right"
-            />
+            <FilteredDrawer isOpen={isOpen} toggleDrawer={toggleDrawer} direction="right" />
         </>
     );
 };
