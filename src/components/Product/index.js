@@ -14,21 +14,20 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
     const { register, handleSubmit, reset } = useForm();
     const { purchases } = useStorPurchase();
     const { setIsPurchase, dontReceived, setDontReceived } = useTab();
+    // Destructure storPurchase and item to make the code more readable
+    const { date, district_id, total_amount } = storPurchase;
+    const { product_id, total_qty, product_type } = item;
 
     const rate = item.rate - (item.rate * 4) / 100;
     const amount = rate * item.total_qty;
     const onSubmit = async (formData) => {
         const postData = new FormData();
 
-        // Destructure storPurchase and item to make the code more readable
-        const { date, district_id, total_amount } = storPurchase;
-        const { product_id, total_qty, product_type } = item;
-
         // Append all values if they are valid
         appendIfValid(postData, "order_date", date);
         appendIfValid(postData, "district_id", district_id);
         appendIfValid(postData, "total_sale", total_amount);
-        appendIfValid(postData, `buying_price[${product_id}]`, formData.purchase);
+        appendIfValid(postData, `buying_price[${data.product_id}]`, formData.purchase);
         appendIfValid(postData, "product_ids[]", product_id);
         appendIfValid(postData, `quantities[${product_id}]`, total_qty);
         appendIfValid(postData, `product_type[${product_id}]`, product_type);
@@ -57,20 +56,40 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
         }
     };
 
-    const handleShort = (data) => {
+    const handleShort = async (data) => {
         console.log("data------", data);
+        const shortData = new FormData();
 
-        // try {
-        //     const { loading, success, error, responseData } = await purchases(shortData);
-        //     if (success) {
-        //         setIsPurchase((prev) => !prev);
-        //     }
-        //     reset();
-        // } catch (error) {
-        //     console.log(error);
-        // } finally {
-        //     console.log("onSubmit process finished.");
-        // }
+        // Append all values if they are valid
+        appendIfValid(shortData, "order_date", date);
+        appendIfValid(shortData, "district_id", district_id);
+        appendIfValid(shortData, "total_sale", data.total_amount);
+        appendIfValid(shortData, `buying_price[${product_id.product_id}]`, data.buying_price);
+        appendIfValid(shortData, "product_ids[]", data.product_id);
+        appendIfValid(shortData, `quantities[${product_id}]`, data.total_qty);
+        appendIfValid(shortData, `product_type[${product_id}]`, "short");
+        appendIfValid(shortData, "stock_item_amount", "10");
+        appendIfValid(shortData, "short_item", "0");
+        appendIfValid(shortData, "return", "0");
+        appendIfValid(shortData, "total_delivery", "10");
+        appendIfValid(shortData, "total_order", null); // Will not append since null
+        appendIfValid(shortData, "purchase_sum", null); // Will not append since null
+        appendIfValid(shortData, "expense_amount", "0");
+        appendIfValid(shortData, "expense_description", "");
+        appendIfValid(shortData, "profit", null); // Will not append since null
+        appendIfValid(shortData, "high_low", "high");
+
+        try {
+            const { loading, success, error, responseData } = await purchases(shortData);
+            if (success) {
+                setIsPurchase((prev) => !prev);
+            }
+            reset();
+        } catch (error) {
+            console.log(error);
+        } finally {
+            console.log("onSubmit process finished.");
+        }
     };
 
     return (

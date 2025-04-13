@@ -29,7 +29,7 @@ const Home = () => {
 
     const purchases = data?.data?.product_list?.filter((item) => item.buying_price > 0);
     const short = data?.data?.product_list?.filter((item) => item.product_type == "short");
-    // const all = data?.data?.product_list?.filter((item) => item.buying_price < 1);
+    const all = data?.data?.product_list?.filter((item) => item.buying_price < 1);
     const high = purchases?.filter((item) => item.buying_price > (item.rate - (item.rate * 4) / 100) * item.total_qty * 1.01);
 
     const low = purchases?.filter((item) => item.buying_price < (item.rate - (item.rate * 4) / 100) * item.total_qty * 0.99);
@@ -70,12 +70,12 @@ const Home = () => {
                 {!isSpecial
                     ? tabs?.data.map((content) => (
                           <div key={content.id} value={`${content.value}`}>
-                              <Products products={activeTab == "purchase" ? purchases : activeTab == "high" ? high : activeTab == "low" ? low : activeTab == "short" ? short : activeTab == "all" ? data?.data?.product_list : []} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
+                              <Products products={activeTab == "purchase" ? purchases : activeTab == "high" ? high : activeTab == "low" ? low : activeTab == "short" ? short : activeTab == "all" ? all : []} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
                           </div>
                       ))
                     : tabsPhone?.data.map((content) => (
                           <div key={content.id} value={`${content.value}`}>
-                              <Products isSpecial={isSpecial} products={activeTab == "purchase" ? purchases : activeTab == "high" ? high : activeTab == "low" ? low : data?.data?.product_list} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
+                              <Products isSpecial={isSpecial} products={activeTab == "purchase" ? purchases : activeTab == "high" ? high : activeTab == "low" ? low : all} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
                           </div>
                       ))}
             </Tabs>
