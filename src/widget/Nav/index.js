@@ -64,6 +64,8 @@ const Nav = () => {
     //         0
     //     );
 
+    console.log("activeTab------", activeTab);
+
     return (
         <>
             <div>

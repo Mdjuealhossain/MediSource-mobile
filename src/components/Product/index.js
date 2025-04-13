@@ -9,8 +9,11 @@ import { appendIfValid } from "@/app/utilities/appendIfValid";
 import AlartModal from "../ErrorModal";
 import { useRouter } from "next/navigation";
 import { MdDoNotDisturbOff } from "react-icons/md";
+import { CgShortcut } from "react-icons/cg";
 
 const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, type = "", IsAdd, isSpecial = false }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [success, setSuccess] = useState(false);
     const { register, handleSubmit, reset } = useForm();
     const { purchases } = useStorPurchase();
     const { setIsPurchase, dontReceived, setDontReceived } = useTab();
@@ -27,7 +30,7 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
         appendIfValid(postData, "order_date", date);
         appendIfValid(postData, "district_id", district_id);
         appendIfValid(postData, "total_sale", total_amount);
-        appendIfValid(postData, `buying_price[${data.product_id}]`, formData.purchase);
+        appendIfValid(postData, `buying_price[${product_id}]`, formData.purchase);
         appendIfValid(postData, "product_ids[]", product_id);
         appendIfValid(postData, `quantities[${product_id}]`, total_qty);
         appendIfValid(postData, `product_type[${product_id}]`, product_type);
@@ -60,33 +63,51 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
         console.log("data------", data);
         const shortData = new FormData();
 
-        // Append all values if they are valid
-        appendIfValid(shortData, "order_date", date);
-        appendIfValid(shortData, "district_id", district_id);
+        // // Helper to append only valid values
+        // const appendIfValid = (formData, key, value) => {
+        //     if (value !== null && value !== undefined) {
+        //         formData.append(key, value);
+        //     }
+        // };
+
+        // Extract product_id correctly
+        const productId = data.product_id;
+
+        // Append all values
+        appendIfValid(shortData, "order_date", date); // make sure 'date' is defined in your scope
+        appendIfValid(shortData, "district_id", district_id); // make sure 'district_id' is defined
         appendIfValid(shortData, "total_sale", data.total_amount);
-        appendIfValid(shortData, `buying_price[${product_id.product_id}]`, data.buying_price);
-        appendIfValid(shortData, "product_ids[]", data.product_id);
-        appendIfValid(shortData, `quantities[${product_id}]`, data.total_qty);
-        appendIfValid(shortData, `product_type[${product_id}]`, "short");
+        appendIfValid(shortData, `buying_price[${productId}]`, data.buying_price);
+        appendIfValid(shortData, "product_ids[]", productId);
+        appendIfValid(shortData, `quantities[${productId}]`, data.total_qty);
+        appendIfValid(shortData, `product_type[${productId}]`, "short");
         appendIfValid(shortData, "stock_item_amount", "10");
         appendIfValid(shortData, "short_item", "0");
         appendIfValid(shortData, "return", "0");
         appendIfValid(shortData, "total_delivery", "10");
-        appendIfValid(shortData, "total_order", null); // Will not append since null
-        appendIfValid(shortData, "purchase_sum", null); // Will not append since null
         appendIfValid(shortData, "expense_amount", "0");
         appendIfValid(shortData, "expense_description", "");
-        appendIfValid(shortData, "profit", null); // Will not append since null
         appendIfValid(shortData, "high_low", "high");
+
+        // Optional: log all FormData entries for debugging
+        console.log("FormData being sent:");
+        for (let [key, value] of shortData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
 
         try {
             const { loading, success, error, responseData } = await purchases(shortData);
             if (success) {
-                setIsPurchase((prev) => !prev);
+                setIsOpen(true);
+                setSuccess(success);
+                reset();
+                window.location.reload();
+            } else {
+                console.error("API error:", error);
             }
-            reset();
+            console.log("response", success);
         } catch (error) {
-            console.log(error);
+            console.error("Request failed:", error);
         } finally {
             console.log("onSubmit process finished.");
         }
@@ -129,9 +150,9 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
                                 </span>
                             </p>
                         </div>
-                        {!isSpecial && type == "all" && (
-                            <span onClick={() => handleShort(item)} className=" p-1 rounded-full bg-secondary absolute right-4 top-1/2 -translate-y-1/2">
-                                <MdDoNotDisturbOff className=" text-warning_light" />
+                        {!isSpecial && type == "all" && item.product_type !== "short" && (
+                            <span onClick={() => handleShort(item)} className=" px-2 py-1 bg-warning_main absolute right-0 top-0 ">
+                                <CgShortcut className=" text-white" />
                             </span>
                         )}
                     </div>
@@ -152,6 +173,8 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
                     )}
                 </div>
             </div>
+            {/* alart Modal */}
+            <AlartModal isOpen={isOpen} openModal={() => setIsOpen(true)} closeModal={() => setIsOpen(false)} message={"Shorted successfully"} success={success} />
         </>
     );
 };

@@ -2,14 +2,18 @@
 import { useTab } from "@/app/contexApi";
 import React, { useEffect } from "react";
 
-const Tabs = ({ tabs = [], children, tabContainerClass, contentClass }) => {
+const Tabs = ({ tabs = [], children, tabContainerClass, contentClass, isSpecial }) => {
     const { activeTab, setActiveTab } = useTab();
 
+    const initTab = isSpecial ? "purchase" : "all";
+
+    console.log("initTab", initTab);
+
     useEffect(() => {
-        if (!activeTab && tabs.length > 0) {
-            setActiveTab(tabs[0]?.value);
+        if (tabs.length > 0) {
+            setActiveTab(initTab);
         }
-    }, [activeTab, setActiveTab, tabs]);
+    }, [setActiveTab, tabs]);
 
     return (
         <div className="w-full">

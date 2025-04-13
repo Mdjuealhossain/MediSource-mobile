@@ -6,6 +6,7 @@ import { useTab } from "../contexApi";
 import Tabs from "@/components/Tabs";
 import useAddPurchaseInfo from "../hooks/useAddPurchaseInfo";
 import { getFormattedDate } from "../utilities/getFormattedDates";
+import AlartModal from "@/components/ErrorModal";
 
 const Home = () => {
     const [isSpecial, setIsSpecial] = useState(false);
@@ -31,6 +32,7 @@ const Home = () => {
     const short = data?.data?.product_list?.filter((item) => item.product_type == "short");
     const all = data?.data?.product_list?.filter((item) => item.buying_price < 1);
     const high = purchases?.filter((item) => item.buying_price > (item.rate - (item.rate * 4) / 100) * item.total_qty * 1.01);
+    const fack = data?.data?.product_list?.filter((item) => item.product_id == "1638");
 
     const low = purchases?.filter((item) => item.buying_price < (item.rate - (item.rate * 4) / 100) * item.total_qty * 0.99);
 
@@ -62,24 +64,26 @@ const Home = () => {
         }
     }, []);
 
-    console.log("data?.data?.product_list", data?.data?.product_list);
+    console.log("data?.data?.product_list", isSpecial);
 
     return (
-        <div className=" my-4 px-4">
-            <Tabs tabs={isSpecial ? tabsPhone?.data : tabs?.data} contentClass={"md:mt-10 mt-6"}>
-                {!isSpecial
-                    ? tabs?.data.map((content) => (
-                          <div key={content.id} value={`${content.value}`}>
-                              <Products products={activeTab == "purchase" ? purchases : activeTab == "high" ? high : activeTab == "low" ? low : activeTab == "short" ? short : activeTab == "all" ? all : []} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
-                          </div>
-                      ))
-                    : tabsPhone?.data.map((content) => (
-                          <div key={content.id} value={`${content.value}`}>
-                              <Products isSpecial={isSpecial} products={activeTab == "purchase" ? purchases : activeTab == "high" ? high : activeTab == "low" ? low : all} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
-                          </div>
-                      ))}
-            </Tabs>
-        </div>
+        <>
+            <div className=" my-4 px-4">
+                <Tabs tabs={isSpecial ? tabsPhone?.data : tabs?.data} contentClass={"md:mt-10 mt-6"} isSpecial={isSpecial}>
+                    {!isSpecial
+                        ? tabs?.data.map((content) => (
+                              <div key={content.id} value={`${content.value}`}>
+                                  <Products products={activeTab == "purchase" ? purchases : activeTab == "high" ? high : activeTab == "low" ? low : activeTab == "short" ? short : activeTab == "all" ? all : []} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
+                              </div>
+                          ))
+                        : tabsPhone?.data.map((content) => (
+                              <div key={content.id} value={`${content.value}`}>
+                                  <Products isSpecial={isSpecial} products={activeTab == "purchase" ? purchases : activeTab == "high" ? high : activeTab == "low" ? low : all} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
+                              </div>
+                          ))}
+                </Tabs>
+            </div>
+        </>
     );
 };
 
