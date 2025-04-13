@@ -9,7 +9,8 @@ import { getFormattedDate } from "../utilities/getFormattedDates";
 
 const Home = () => {
     const [isSpecial, setIsSpecial] = useState(false);
-    const { isData, setIsData, isFilterData, activeTab, isPurchase } = useTab();
+
+    const { setIsData, isFilterData, activeTab, isPurchase } = useTab();
     const presentDate = getFormattedDate(isFilterData?.date);
 
     const date = new Date();
@@ -25,8 +26,10 @@ const Home = () => {
     };
 
     const { data } = useAddPurchaseInfo(info, isPurchase);
+
     const purchases = data?.data?.product_list?.filter((item) => item.buying_price > 0);
-    const all = data?.data?.product_list?.filter((item) => item.buying_price < 1);
+    const short = data?.data?.product_list?.filter((item) => item.product_type == "short");
+    // const all = data?.data?.product_list?.filter((item) => item.buying_price < 1);
     const high = purchases?.filter((item) => item.buying_price > (item.rate - (item.rate * 4) / 100) * item.total_qty * 1.01);
 
     const low = purchases?.filter((item) => item.buying_price < (item.rate - (item.rate * 4) / 100) * item.total_qty * 0.99);
@@ -59,18 +62,20 @@ const Home = () => {
         }
     }, []);
 
+    console.log("data?.data?.product_list", data?.data?.product_list);
+
     return (
         <div className=" my-4 px-4">
             <Tabs tabs={isSpecial ? tabsPhone?.data : tabs?.data} contentClass={"md:mt-10 mt-6"}>
                 {!isSpecial
                     ? tabs?.data.map((content) => (
                           <div key={content.id} value={`${content.value}`}>
-                              <Products products={activeTab === "purchase" ? purchases : activeTab === "high" ? high : activeTab === "low" ? low : activeTab === "1" ? [] : all} storPurchase={storPurchase} IsAdd={content.value === ""} type={activeTab} />
+                              <Products products={activeTab == "purchase" ? purchases : activeTab == "high" ? high : activeTab == "low" ? low : activeTab == "short" ? short : activeTab == "all" ? data?.data?.product_list : []} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
                           </div>
                       ))
                     : tabsPhone?.data.map((content) => (
                           <div key={content.id} value={`${content.value}`}>
-                              <Products isSpecial={isSpecial} products={activeTab === "purchase" ? purchases : activeTab === "high" ? high : activeTab === "low" ? low : all} storPurchase={storPurchase} IsAdd={content.value === ""} type={activeTab} />
+                              <Products isSpecial={isSpecial} products={activeTab == "purchase" ? purchases : activeTab == "high" ? high : activeTab == "low" ? low : data?.data?.product_list} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
                           </div>
                       ))}
             </Tabs>
@@ -82,11 +87,12 @@ export default Home;
 
 const tabs = {
     data: [
-        { id: 1, value: "", name: "All" },
+        { id: 1, value: "all", name: "All" },
         { id: 2, value: "purchase", name: "Purchase" },
         { id: 4, value: "1", name: "D-R" },
         { id: 5, value: "high", name: "High" },
         { id: 6, value: "low", name: "Low" },
+        { id: 7, value: "short", name: "Short" },
     ],
 };
 const tabsPhone = {

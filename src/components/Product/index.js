@@ -57,11 +57,20 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
         }
     };
 
-    console.log("item", item);
+    const handleShort = (data) => {
+        console.log("data------", data);
 
-    const handleDontReceivedData = (data) => {
-        // console.log("data", data);
-        // setDontReceived((prev) => [...prev, data]); // নতুন ডাটা যোগ করা
+        // try {
+        //     const { loading, success, error, responseData } = await purchases(shortData);
+        //     if (success) {
+        //         setIsPurchase((prev) => !prev);
+        //     }
+        //     reset();
+        // } catch (error) {
+        //     console.log(error);
+        // } finally {
+        //     console.log("onSubmit process finished.");
+        // }
     };
 
     return (
@@ -101,27 +110,27 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
                                 </span>
                             </p>
                         </div>
-                        {isSpecial && type == "purchase" && (
-                            <span onClick={handleDontReceivedData(item)} className=" p-1 rounded-full bg-secondary absolute right-4 top-1/2 -translate-y-1/2">
+                        {!isSpecial && type == "all" && (
+                            <span onClick={() => handleShort(item)} className=" p-1 rounded-full bg-secondary absolute right-4 top-1/2 -translate-y-1/2">
                                 <MdDoNotDisturbOff className=" text-warning_light" />
                             </span>
                         )}
                     </div>
-                    {/* {IsAdd && ( */}
-                    <form onSubmit={handleSubmit(onSubmit)} className=" bg-white z-50 rounded-md flex items-center justify-center">
-                        <input
-                            {...register("purchase", {
-                                required: true,
-                            })}
-                            placeholder="Enter Purchase"
-                            className="text-subtitle2 placeholder:text-subtitle2 w-1/2 outline-none focus:outline-none border rounded-l px-4 py-[4px]"
-                        />
+                    {IsAdd && (
+                        <form onSubmit={handleSubmit(onSubmit)} className=" bg-white z-50 rounded-md flex items-center justify-center">
+                            <input
+                                {...register("purchase", {
+                                    required: true,
+                                })}
+                                placeholder="Enter Purchase"
+                                className="text-subtitle2 placeholder:text-subtitle2 w-1/2 outline-none focus:outline-none border rounded-l px-4 py-[4px]"
+                            />
 
-                        <button type="submit" className="text-body2 font-medium px-8 py-1 rounded-r text-white bg-success_main capitalize border w-1/2">
-                            Add
-                        </button>
-                    </form>
-                    {/* )} */}
+                            <button type="submit" className="text-body2 font-medium px-8 py-1 rounded-r text-white bg-success_main capitalize border w-1/2">
+                                Add
+                            </button>
+                        </form>
+                    )}
                 </div>
             </div>
         </>

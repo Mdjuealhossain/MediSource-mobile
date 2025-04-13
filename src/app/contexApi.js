@@ -10,6 +10,7 @@ export function ProductProvider({ children }) {
     const [isFilterData, setIsFilterData] = useState({});
     const [isPurchase, setIsPurchase] = useState(false);
     const [dontReceived, setDontReceived] = useState([]);
+    const [isShort, setIsShort] = useState("");
 
     return (
         <ProductContext.Provider
@@ -24,6 +25,8 @@ export function ProductProvider({ children }) {
                 setIsPurchase,
                 dontReceived,
                 setDontReceived,
+                isShort,
+                setIsShort,
             }}
         >
             {children}
