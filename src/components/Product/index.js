@@ -14,9 +14,11 @@ import { CgShortcut } from "react-icons/cg";
 const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, type = "", IsAdd, isSpecial = false }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [isMsg, setIsMsg] = useState(null);
     const { register, handleSubmit, reset } = useForm();
     const { purchases } = useStorPurchase();
-    const { setIsPurchase, dontReceived, setDontReceived } = useTab();
+    const { purchases: short } = useStorPurchase();
+    const { setIsPurchase, setIsShort, setDontReceived } = useTab();
     // Destructure storPurchase and item to make the code more readable
     const { date, district_id, total_amount } = storPurchase;
     const { product_id, total_qty, product_type } = item;
@@ -48,7 +50,10 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
         try {
             const { loading, success, error, responseData } = await purchases(postData);
             if (success) {
+                setIsOpen(true);
+                setSuccess(success);
                 setIsPurchase((prev) => !prev);
+                setIsMsg("Purchase Added!");
             }
 
             reset();
@@ -96,12 +101,13 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
         }
 
         try {
-            const { loading, success, error, responseData } = await purchases(shortData);
+            const { loading, success, error, responseData } = await short(shortData);
             if (success) {
                 setIsOpen(true);
                 setSuccess(success);
+                setIsMsg("Shorted successfully");
+                setIsShort((prev) => !prev);
                 reset();
-                window.location.reload();
             } else {
                 console.error("API error:", error);
             }
@@ -174,7 +180,7 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
                 </div>
             </div>
             {/* alart Modal */}
-            <AlartModal isOpen={isOpen} openModal={() => setIsOpen(true)} closeModal={() => setIsOpen(false)} message={"Shorted successfully"} success={success} />
+            <AlartModal isOpen={isOpen} openModal={() => setIsOpen(true)} closeModal={() => setIsOpen(false)} message={isMsg} success={success} />
         </>
     );
 };

@@ -4,22 +4,17 @@ import { useEffect, useState } from "react";
 import { useApi } from "./useApi";
 import { buildQueryParams } from "../utilities/buildQueryParams";
 
-const useAddPurchaseInfo = (params = {}, isPurchase) => {
+const useAddPurchaseInfo = (params = {}) => {
     const { apiRequest } = useApi();
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const {
-        district,
-        date,
-        area_id,
-        user_id,
-        pagination,
-        product_type,
-        is_dr,
-        high_low,
-    } = params;
+    const { district, date, area_id, user_id, pagination, product_type, is_dr, high_low, isPurchase, isShort } = params;
+
+    console.log("isShort", isShort);
+
+    console.log("product_type", product_type);
 
     const queryString = buildQueryParams(params);
 
@@ -54,17 +49,7 @@ const useAddPurchaseInfo = (params = {}, isPurchase) => {
     // Trigger fetch when any of these params change
     useEffect(() => {
         fetchProducts();
-    }, [
-        district,
-        date,
-        area_id,
-        user_id,
-        pagination,
-        isPurchase,
-        product_type,
-        is_dr,
-        high_low,
-    ]);
+    }, [district, date, area_id, user_id, pagination, isPurchase, isShort, product_type, is_dr, high_low]);
 
     return { data, loading, error };
 };

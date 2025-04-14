@@ -11,7 +11,7 @@ import AlartModal from "@/components/ErrorModal";
 const Home = () => {
     const [isSpecial, setIsSpecial] = useState(false);
 
-    const { setIsData, isFilterData, activeTab, isPurchase } = useTab();
+    const { setIsData, isFilterData, activeTab, isPurchase, isShort } = useTab();
     const presentDate = getFormattedDate(isFilterData?.date);
 
     const date = new Date();
@@ -24,13 +24,15 @@ const Home = () => {
         district: isFilterData?.district?.id || "1",
         area_id: isFilterData?.area?.id,
         user_id: isFilterData?.user?.id,
+        isShort: isShort,
+        isPurchase: isPurchase,
     };
 
-    const { data } = useAddPurchaseInfo(info, isPurchase);
+    const { data } = useAddPurchaseInfo(info);
 
     const purchases = data?.data?.product_list?.filter((item) => item.buying_price > 0);
     const short = data?.data?.product_list?.filter((item) => item.product_type == "short");
-    const all = data?.data?.product_list?.filter((item) => item.buying_price < 1);
+    const all = data?.data?.product_list?.filter((item) => item.buying_price < 1 && item.product_type !== "short");
     const high = purchases?.filter((item) => item.buying_price > (item.rate - (item.rate * 4) / 100) * item.total_qty * 1.01);
     const fack = data?.data?.product_list?.filter((item) => item.product_id == "1638");
 
