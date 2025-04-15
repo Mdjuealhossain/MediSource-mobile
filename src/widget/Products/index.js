@@ -3,25 +3,12 @@ import { useState, useEffect } from "react";
 
 import Product from "@/components/Product";
 
-const Products = ({ products, isshowap, storPurchase, type, IsAdd, isSpecial }) => {
-    const [items, setItems] = useState([]);
-
-    useEffect(() => {
-        setItems(products || []);
-    }, [products]);
-
-    const handleDelete = (id) => {
-        setItems((prevItems) => prevItems.filter((item) => item.product_id !== id));
-    };
-
-    if (!Array.isArray(items)) {
-        return <div>Loading...</div>;
-    }
-
+const Products = ({ products = [], isshowap, storPurchase, type, IsAdd, isSpecial }) => {
+    console.log("products---", products);
     return (
         <div className="space-y-2">
-            {items.map((product, index) => (
-                <Product storPurchase={storPurchase} key={product.product_id} item={product} index={index} onDelete={handleDelete} isshowap={isshowap} type={type} IsAdd={IsAdd} isSpecial={isSpecial} />
+            {products.map((product, index) => (
+                <Product storPurchase={storPurchase} key={product.product_id} item={product} index={index} type={type} IsAdd={IsAdd} isSpecial={isSpecial} />
             ))}
         </div>
     );

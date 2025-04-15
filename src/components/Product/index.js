@@ -1,123 +1,125 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { CgShortcut } from "react-icons/cg";
+import { HiBan } from "react-icons/hi";
 
-import useModal from "@/app/hooks/useModal";
 import useStorPurchase from "@/app/hooks/useStorPurchase";
 import { useTab } from "@/app/contexApi";
-import { getFormattedDates } from "@/app/utilities/getFormattedDates";
 import { appendIfValid } from "@/app/utilities/appendIfValid";
+import { MdOutlineAssignmentReturn } from "react-icons/md";
+
 import AlartModal from "../ErrorModal";
-import { useRouter } from "next/navigation";
-import { MdDoNotDisturbOff } from "react-icons/md";
-import { CgShortcut } from "react-icons/cg";
+import { prepareFormData } from "@/app/utilities/prepareFormData";
+import PurchaseModal from "../PurchaseModal";
+import useModal from "@/app/hooks/useModal";
 
 const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, type = "", IsAdd, isSpecial = false }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [success, setSuccess] = useState(false);
+    const { isOpen: open, openModal: openReturn, closeModal: closeReturn } = useModal();
     const [isMsg, setIsMsg] = useState(null);
+    const [isReturn, setIsReturn] = useState(null);
+
     const { register, handleSubmit, reset } = useForm();
     const { purchases } = useStorPurchase();
     const { purchases: short } = useStorPurchase();
+    const { purchases: d_r } = useStorPurchase();
     const { setIsPurchase, setIsShort, setDontReceived } = useTab();
-    // Destructure storPurchase and item to make the code more readable
+
     const { date, district_id, total_amount } = storPurchase;
-    const { product_id, total_qty, product_type } = item;
+    const { product_type } = item;
 
     const rate = item.rate - (item.rate * 4) / 100;
     const amount = rate * item.total_qty;
-    const onSubmit = async (formData) => {
-        const postData = new FormData();
 
-        // Append all values if they are valid
-        appendIfValid(postData, "order_date", date);
-        appendIfValid(postData, "district_id", district_id);
-        appendIfValid(postData, "total_sale", total_amount);
-        appendIfValid(postData, `buying_price[${product_id}]`, formData.purchase);
-        appendIfValid(postData, "product_ids[]", product_id);
-        appendIfValid(postData, `quantities[${product_id}]`, total_qty);
-        appendIfValid(postData, `product_type[${product_id}]`, product_type);
-        appendIfValid(postData, "stock_item_amount", "10");
-        appendIfValid(postData, "short_item", "0");
-        appendIfValid(postData, "return", "0");
-        appendIfValid(postData, "total_delivery", "10");
-        appendIfValid(postData, "total_order", null); // Will not append since null
-        appendIfValid(postData, "purchase_sum", null); // Will not append since null
-        appendIfValid(postData, "expense_amount", "0");
-        appendIfValid(postData, "expense_description", "");
-        appendIfValid(postData, "profit", null); // Will not append since null
-        appendIfValid(postData, "high_low", "high");
+    const handlePurchaseSubmit = async (formData) => {
+        const final_data = {
+            ...formData,
+            ...item,
+            ...storPurchase,
+            buying_price: formData.purchase,
+        };
 
+        const postData = prepareFormData(final_data);
         try {
-            const { loading, success, error, responseData } = await purchases(postData);
+            const { success } = await purchases(postData);
             if (success) {
                 setIsOpen(true);
-                setSuccess(success);
-                setIsPurchase((prev) => !prev);
+                setSuccess(true);
                 setIsMsg("Purchase Added!");
+                setIsPurchase((prev) => !prev);
+                reset();
             }
-
-            reset();
-        } catch (error) {
-            console.log(error);
-        } finally {
-            console.log("onSubmit process finished.");
+        } catch (err) {
+            console.error("Purchase error:", err);
         }
     };
 
     const handleShort = async (data) => {
-        console.log("data------", data);
-        const shortData = new FormData();
+        const final_data = {
+            ...data,
+            ...storPurchase,
+            product_type: "short",
+        };
 
-        // // Helper to append only valid values
-        // const appendIfValid = (formData, key, value) => {
-        //     if (value !== null && value !== undefined) {
-        //         formData.append(key, value);
-        //     }
-        // };
-
-        // Extract product_id correctly
-        const productId = data.product_id;
-
-        // Append all values
-        appendIfValid(shortData, "order_date", date); // make sure 'date' is defined in your scope
-        appendIfValid(shortData, "district_id", district_id); // make sure 'district_id' is defined
-        appendIfValid(shortData, "total_sale", data.total_amount);
-        appendIfValid(shortData, `buying_price[${productId}]`, data.buying_price);
-        appendIfValid(shortData, "product_ids[]", productId);
-        appendIfValid(shortData, `quantities[${productId}]`, data.total_qty);
-        appendIfValid(shortData, `product_type[${productId}]`, "short");
-        appendIfValid(shortData, "stock_item_amount", "10");
-        appendIfValid(shortData, "short_item", "0");
-        appendIfValid(shortData, "return", "0");
-        appendIfValid(shortData, "total_delivery", "10");
-        appendIfValid(shortData, "expense_amount", "0");
-        appendIfValid(shortData, "expense_description", "");
-        appendIfValid(shortData, "high_low", "high");
-
-        // Optional: log all FormData entries for debugging
-        console.log("FormData being sent:");
-        for (let [key, value] of shortData.entries()) {
-            console.log(`${key}: ${value}`);
-        }
-
+        const shortData = prepareFormData(final_data);
         try {
-            const { loading, success, error, responseData } = await short(shortData);
+            const { success } = await short(shortData);
             if (success) {
                 setIsOpen(true);
-                setSuccess(success);
+                setSuccess(true);
                 setIsMsg("Shorted successfully");
                 setIsShort((prev) => !prev);
                 reset();
-            } else {
-                console.error("API error:", error);
             }
-            console.log("response", success);
-        } catch (error) {
-            console.error("Request failed:", error);
-        } finally {
-            console.log("onSubmit process finished.");
+        } catch (err) {
+            console.error("Short request error:", err);
         }
     };
+    const handleDr = async (data) => {
+        const final_data = {
+            ...data,
+            ...storPurchase,
+            is_dr: "1",
+        };
+
+        const drData = prepareFormData(final_data);
+        try {
+            const { success } = await d_r(drData);
+            if (success) {
+                setIsOpen(true);
+                setSuccess(true);
+                setIsMsg("Don't Received");
+                setIsShort((prev) => !prev);
+                reset();
+            }
+        } catch (err) {
+            console.error("Short request error:", err);
+        }
+    };
+    const handleReturn = async (value) => {
+        const final_data = {
+            ...item,
+            ...storPurchase,
+            return_qty: value,
+        };
+
+        const drData = prepareFormData(final_data);
+        try {
+            const { success } = await d_r(drData);
+            if (success) {
+                setIsShort((prev) => !prev);
+                reset();
+            }
+        } catch (err) {
+            console.error("Return request error:", err);
+        }
+    };
+
+    const renderRate = () => (type === "purchase" || type === "high" || type === "low" ? (item.buying_price / item.total_qty || 0).toFixed(1) : rate.toFixed(1));
+
+    const renderAmount = () => (type === "purchase" || type === "high" || type === "low" ? (item.buying_price || 0).toFixed(1) : amount.toFixed(1));
 
     return (
         <>
@@ -128,50 +130,40 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
                         <h6 className="text-H6 font-medium mb-1">{item.name || "Unknown name"}</h6>
                         <div className="flex items-center gap-0.5">
                             <p className="text-body2">
-                                Qty:
-                                <span className="font-semibold pl-1">{item.total_qty}</span>
+                                Qty: <span className="font-semibold pl-1">{item.total_qty}</span>
                             </p>
                             <span className="px-1">|</span>
                             <p className="text-body2">
-                                R:
-                                <span className={`font-semibold pl-1 ${isSpecial ? "hidden" : "inline"}`}>
-                                    {type == "purchase" || type == "high" || type == "low" ? parseFloat((item.buying_price / item.total_qty || 0).toFixed(1)) : parseFloat((rate || 0).toFixed(1))}
-                                    TK
-                                </span>
-                                <span className={`font-semibold pl-1 ${!isSpecial ? " hidden" : "inline"}`}>
-                                    {parseFloat((item.rate || 0).toFixed(1))}
-                                    TK
-                                </span>
+                                R: <span className={`font-semibold pl-1 ${isSpecial ? "hidden" : "inline"}`}>{renderRate()} TK</span>
+                                <span className={`font-semibold pl-1 ${!isSpecial ? "hidden" : "inline"}`}>{(item.rate || 0).toFixed(1)} TK</span>
                             </p>
                             <span className="px-1">|</span>
                             <p className="text-body2">
-                                A:
-                                <span className={`font-semibold pl-1 ${isSpecial ? " hidden" : "inline"}`}>
-                                    {type == "purchase" || type == "high" || type == "low" ? parseFloat((item.buying_price || 0).toFixed(1)) : parseFloat((amount || 0).toFixed(1))}
-                                    TK
-                                </span>
-                                <span className={`font-semibold pl-1 ${!isSpecial ? "hidden" : "inline"}`}>
-                                    {parseFloat((item.total_amount || 0).toFixed(1))}
-                                    TK
-                                </span>
+                                A: <span className={`font-semibold pl-1 ${isSpecial ? "hidden" : "inline"}`}>{renderAmount()} TK</span>
+                                <span className={`font-semibold pl-1 ${!isSpecial ? "hidden" : "inline"}`}>{(item.total_amount || 0).toFixed(1)} TK</span>
                             </p>
                         </div>
-                        {!isSpecial && type == "all" && item.product_type !== "short" && (
-                            <span onClick={() => handleShort(item)} className=" px-2 py-1 bg-warning_main absolute right-0 top-0 ">
-                                <CgShortcut className=" text-white" />
-                            </span>
+                        {isSpecial && type === "purchase" && (
+                            <button disabled={item.is_dr == "1"} onClick={() => handleDr(item)} className={`px-4 py-1  text-warning_main absolute right-0 top-0 ${item.is_dr == "1" ? "bg-success_main/40" : "bg-success_main"}`}>
+                                <HiBan />
+                            </button>
+                        )}
+                        {isSpecial && type === "purchase" && (
+                            <button disabled={item.return_qty} onClick={openReturn} className={`px-4 py-1  text-white  absolute right-0 bottom-0 ${item.return_qty ? "bg-warning_main/40" : "bg-warning_main"}`}>
+                                <MdOutlineAssignmentReturn className="text-white" />
+                            </button>
+                        )}
+
+                        {!isSpecial && type === "all" && product_type !== "short" && (
+                            <button onClick={() => handleShort(item)} className=" px-2 py-1 bg-warning_main absolute right-0 top-0 ">
+                                <CgShortcut className="text-white" />
+                            </button>
                         )}
                     </div>
-                    {IsAdd && (
-                        <form onSubmit={handleSubmit(onSubmit)} className=" bg-white z-50 rounded-md flex items-center justify-center">
-                            <input
-                                {...register("purchase", {
-                                    required: true,
-                                })}
-                                placeholder="Enter Purchase"
-                                className="text-subtitle2 placeholder:text-subtitle2 w-1/2 outline-none focus:outline-none border rounded-l px-4 py-[4px]"
-                            />
 
+                    {IsAdd && (
+                        <form onSubmit={handleSubmit(handlePurchaseSubmit)} className="bg-white z-50 rounded-md flex items-center justify-center">
+                            <input {...register("purchase", { required: true })} placeholder="Enter Purchase" className="text-subtitle2 placeholder:text-subtitle2 w-1/2 outline-none border rounded-l px-4 py-[4px]" />
                             <button type="submit" className="text-body2 font-medium px-8 py-1 rounded-r text-white bg-success_main capitalize border w-1/2">
                                 Add
                             </button>
@@ -179,8 +171,10 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
                     )}
                 </div>
             </div>
-            {/* alart Modal */}
+
             <AlartModal isOpen={isOpen} openModal={() => setIsOpen(true)} closeModal={() => setIsOpen(false)} message={isMsg} success={success} />
+
+            <PurchaseModal onReturn={handleReturn} isOpen={open} closeModal={closeReturn} qnt={item.total_qty} />
         </>
     );
 };

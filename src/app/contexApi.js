@@ -11,6 +11,7 @@ export function ProductProvider({ children }) {
     const [isPurchase, setIsPurchase] = useState(false);
     const [dontReceived, setDontReceived] = useState([]);
     const [isShort, setIsShort] = useState("");
+    const [title, setTitle] = useState("");
 
     return (
         <ProductContext.Provider
@@ -27,6 +28,8 @@ export function ProductProvider({ children }) {
                 setDontReceived,
                 isShort,
                 setIsShort,
+                title,
+                setTitle,
             }}
         >
             {children}

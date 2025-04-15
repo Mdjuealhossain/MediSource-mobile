@@ -7,11 +7,12 @@ import Tabs from "@/components/Tabs";
 import useAddPurchaseInfo from "../hooks/useAddPurchaseInfo";
 import { getFormattedDate } from "../utilities/getFormattedDates";
 import AlartModal from "@/components/ErrorModal";
+import { set } from "react-hook-form";
 
 const Home = () => {
     const [isSpecial, setIsSpecial] = useState(false);
 
-    const { setIsData, isFilterData, activeTab, isPurchase, isShort } = useTab();
+    const { setIsData, isFilterData, activeTab, isPurchase, isShort, setTitle } = useTab();
     const presentDate = getFormattedDate(isFilterData?.date);
 
     const date = new Date();
@@ -30,22 +31,48 @@ const Home = () => {
 
     const { data } = useAddPurchaseInfo(info);
 
-    const purchases = data?.data?.product_list?.filter((item) => item.buying_price > 0);
-    const short = data?.data?.product_list?.filter((item) => item.product_type == "short");
-    const all = data?.data?.product_list?.filter((item) => item.buying_price < 1 && item.product_type !== "short");
+    const order = data?.data?.product_list;
+    const purchases = data?.data?.product_list?.filter((item) => item.buying_price > 0 && item.is_dr !== "1");
+    const short = data?.data?.product_list?.filter((item) => item.product_type == "short" && item.buying_price == 0);
+    const all = data?.data?.product_list?.filter((item) => item.buying_price < 1 && item.product_type !== "short" && item.product_type !== "stock ");
     const high = purchases?.filter((item) => item.buying_price > (item.rate - (item.rate * 4) / 100) * item.total_qty * 1.01);
-    const fack = data?.data?.product_list?.filter((item) => item.product_id == "1638");
+    const dr = data?.data?.product_list?.filter((item) => item.buying_price > 0 && item.is_dr == "1");
+    const returned = purchases?.filter((item) => item.return_qty);
+
+    const test = data?.data?.product_list?.filter((item) => item.product_id == "1638");
 
     const low = purchases?.filter((item) => item.buying_price < (item.rate - (item.rate * 4) / 100) * item.total_qty * 0.99);
 
     const purcgaseTotalAmountSum = purchases?.reduce((sum, product) => sum + product.buying_price, 0);
+
     const purcgaseSpecialTotalAmountSum = purchases?.reduce((sum, product) => sum + product.total_amount, 0);
 
+    const orderSum = order?.reduce((sum, product) => sum + product.total_amount, 0);
+    const drSum = dr?.reduce((sum, product) => sum + product.total_amount, 0);
+    const shortSum = short?.reduce((sum, product) => sum + product.total_amount, 0);
+
+    console.log("orderSum=", short);
+
     useEffect(() => {
-        if (isSpecial) {
+        if (activeTab == "order" && isSpecial) {
+            setIsData(orderSum);
+            setTitle("Order");
+        }
+        if (activeTab == "purchase" && isSpecial) {
             setIsData(purcgaseSpecialTotalAmountSum);
-        } else {
+            setTitle("Purchase");
+        }
+        if (!isSpecial && activeTab == "purchase") {
             setIsData(purcgaseTotalAmountSum);
+            setTitle("Purchase");
+        }
+        if (!isSpecial && activeTab == "dr") {
+            setIsData(drSum);
+            setTitle("D-R");
+        }
+        if (!isSpecial && activeTab == "short") {
+            setIsData(shortSum);
+            setTitle("Short");
         }
     }, [activeTab, data]);
 
@@ -66,7 +93,7 @@ const Home = () => {
         }
     }, []);
 
-    console.log("data?.data?.product_list", isSpecial);
+    console.log("data?.data?.product_list", all);
 
     return (
         <>
@@ -75,12 +102,12 @@ const Home = () => {
                     {!isSpecial
                         ? tabs?.data.map((content) => (
                               <div key={content.id} value={`${content.value}`}>
-                                  <Products products={activeTab == "purchase" ? purchases : activeTab == "high" ? high : activeTab == "low" ? low : activeTab == "short" ? short : activeTab == "all" ? all : []} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
+                                  <Products products={activeTab == "purchase" ? purchases : activeTab == "high" ? high : activeTab == "low" ? low : activeTab == "short" ? short : activeTab == "dr" ? dr : activeTab == "all" ? all : []} storPurchase={storPurchase} IsAdd={content.value == "all" || content.value == "short"} type={activeTab} />
                               </div>
                           ))
                         : tabsPhone?.data.map((content) => (
                               <div key={content.id} value={`${content.value}`}>
-                                  <Products isSpecial={isSpecial} products={activeTab == "purchase" ? purchases : activeTab == "high" ? high : activeTab == "low" ? low : all} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
+                                  <Products isSpecial={isSpecial} products={activeTab == "purchase" ? purchases : activeTab == "high" ? high : activeTab == "low" ? low : activeTab == "dr" ? dr : activeTab == "return" ? returned : order} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
                               </div>
                           ))}
                 </Tabs>
@@ -95,15 +122,17 @@ const tabs = {
     data: [
         { id: 1, value: "all", name: "All" },
         { id: 2, value: "purchase", name: "Purchase" },
-        { id: 4, value: "1", name: "D-R" },
+        { id: 7, value: "short", name: "Short" },
+        { id: 4, value: "dr", name: "D-R" },
         { id: 5, value: "high", name: "High" },
         { id: 6, value: "low", name: "Low" },
-        { id: 7, value: "short", name: "Short" },
     ],
 };
 const tabsPhone = {
     data: [
+        { id: 1, value: "order", name: "Order" },
         { id: 2, value: "purchase", name: "Purchase" },
-        { id: 4, value: "1", name: "D-R" },
+        { id: 4, value: "dr", name: "D-R" },
+        { id: 5, value: "return", name: "Return" },
     ],
 };

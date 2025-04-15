@@ -9,11 +9,9 @@ import FilteredDrawer from "../FilteredDrawer";
 
 const Nav = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const { activeTab } = useTab();
+    const { activeTab, title } = useTab();
     const [isSearch, setIsSearch] = useState(false);
     const { isData } = useTab();
-
-    console.log("isData", isData);
 
     const searchRef = useRef(null);
 
@@ -70,8 +68,8 @@ const Nav = () => {
         <>
             <div>
                 <nav className={`flex items-center z-0 ${isSearch ? " justify-center" : " justify-between"} px-4 py-3 bg-success_main text-white`}>
-                    <p className={`${isSearch ? "hidden" : "inline-block"} text-subtitle1`}>
-                        {"Total Purchase"} =<span className="font-semibold pl-1">{parseFloat((isData || 0).toFixed(2))}</span>
+                    <p className={`${isSearch ? "hidden" : "inline-block"} text-subtitle1 capitalize`}>
+                        Total {title} =<span className="font-semibold pl-1">{parseFloat((isData || 0).toFixed(2))}</span>
                     </p>
 
                     {isSearch && (
