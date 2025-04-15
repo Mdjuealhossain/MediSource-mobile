@@ -12,9 +12,6 @@ function App() {
         }, 1000);
     };
 
-    console.log("count---", count);
-    console.log("text---", text);
-
     return (
         <div>
             <p>Count: {count}</p>

@@ -12,10 +12,6 @@ const useAddPurchaseInfo = (params = {}) => {
 
     const { district, date, area_id, user_id, pagination, product_type, is_dr, high_low, isPurchase, isShort } = params;
 
-    console.log("isShort", isShort);
-
-    console.log("product_type", product_type);
-
     const queryString = buildQueryParams(params);
 
     const fetchProducts = async () => {

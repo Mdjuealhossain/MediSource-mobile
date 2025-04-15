@@ -5,9 +5,7 @@ import React, { useEffect } from "react";
 const Tabs = ({ tabs = [], children, tabContainerClass, contentClass, isSpecial }) => {
     const { activeTab, setActiveTab } = useTab();
 
-    const initTab = isSpecial ? "purchase" : "all";
-
-    console.log("initTab", initTab);
+    const initTab = isSpecial ? "order" : "all";
 
     useEffect(() => {
         if (tabs.length > 0) {

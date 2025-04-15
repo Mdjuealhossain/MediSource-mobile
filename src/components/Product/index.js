@@ -38,7 +38,7 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
             ...formData,
             ...item,
             ...storPurchase,
-            buying_price: formData.purchase,
+            buying_price: formData.purchase * item.total_qty,
         };
 
         const postData = prepareFormData(final_data);

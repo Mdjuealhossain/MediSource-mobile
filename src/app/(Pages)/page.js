@@ -33,6 +33,7 @@ const Home = () => {
 
     const order = data?.data?.product_list;
     const purchases = data?.data?.product_list?.filter((item) => item.buying_price > 0 && item.is_dr !== "1");
+
     const short = data?.data?.product_list?.filter((item) => item.product_type == "short" && item.buying_price == 0);
     const all = data?.data?.product_list?.filter((item) => item.buying_price < 1 && item.product_type !== "short" && item.product_type !== "stock ");
     const high = purchases?.filter((item) => item.buying_price > (item.rate - (item.rate * 4) / 100) * item.total_qty * 1.01);
@@ -51,8 +52,6 @@ const Home = () => {
     const drSum = dr?.reduce((sum, product) => sum + product.total_amount, 0);
     const shortSum = short?.reduce((sum, product) => sum + product.total_amount, 0);
 
-    console.log("orderSum=", short);
-
     useEffect(() => {
         if (activeTab == "order" && isSpecial) {
             setIsData(orderSum);
@@ -66,7 +65,7 @@ const Home = () => {
             setIsData(purcgaseTotalAmountSum);
             setTitle("Purchase");
         }
-        if (!isSpecial && activeTab == "dr") {
+        if (activeTab == "dr") {
             setIsData(drSum);
             setTitle("D-R");
         }
@@ -92,8 +91,6 @@ const Home = () => {
             }
         }
     }, []);
-
-    console.log("data?.data?.product_list", all);
 
     return (
         <>

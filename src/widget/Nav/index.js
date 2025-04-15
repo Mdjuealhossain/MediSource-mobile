@@ -19,20 +19,10 @@ const Nav = () => {
         setIsOpen((prevState) => !prevState);
     };
 
-    const item_catagories = tabContentas.find((data) => data.id == activeTab);
-
-    const calagory = item_catagories?.catagory === "All" ? "Total Order" : item_catagories?.catagory || "All Category";
-
     const openSearch = (e) => {
         e.preventDefault();
         e.stopPropagation();
         setIsSearch(true);
-    };
-
-    const closeSearch = (e) => {
-        if (searchRef.current && !searchRef.current.contains(e.target)) {
-            setIsSearch(false);
-        }
     };
 
     useEffect(() => {
@@ -52,17 +42,6 @@ const Nav = () => {
             };
         }
     }, [isSearch]);
-
-    // const totalAmountSum =
-    //     isData &&
-    //     isData.reduce(
-    //         (sum, product) =>
-    //             sum +
-    //             (product.rate - (product.rate * 4) / 100) * product.total_qty,
-    //         0
-    //     );
-
-    console.log("activeTab------", activeTab);
 
     return (
         <>

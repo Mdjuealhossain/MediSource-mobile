@@ -79,8 +79,6 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
         setDefaultDate(previousDay);
     }, []);
 
-    console.log("defaultDate", defaultDate);
-
     return (
         <Drawer open={isOpen} onClose={toggleDrawer} direction={direction} className="!w-[80%]">
             <div className="h-full bg-secondary_bg">
