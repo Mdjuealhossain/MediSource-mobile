@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { CgShortcut } from "react-icons/cg";
@@ -15,6 +15,7 @@ import PurchaseModal from "../PurchaseModal";
 import useModal from "@/app/hooks/useModal";
 
 const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, type = "", IsAdd, isSpecial = false }) => {
+    const [qnt, setQnt] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [success, setSuccess] = useState(false);
     const { isOpen: open, openModal: openReturn, closeModal: closeReturn } = useModal();
@@ -25,20 +26,23 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
     const { purchases } = useStorPurchase();
     const { purchases: short } = useStorPurchase();
     const { purchases: d_r } = useStorPurchase();
-    const { setIsPurchase, setIsShort, setDontReceived } = useTab();
+    const { setIsPurchase, setIsShort, toggleIsPs } = useTab();
 
-    const { date, district_id, total_amount } = storPurchase;
+    // const { date, district_id, total_amount } = storPurchase;
     const { product_type } = item;
 
     const rate = item.rate - (item.rate * 4) / 100;
     const amount = rate * item.total_qty;
 
     const handlePurchaseSubmit = async (formData) => {
+        const qnt = formData.qnt ? formData.qnt : item.total_qty;
+        setQnt(qnt);
+
         const final_data = {
             ...formData,
             ...item,
             ...storPurchase,
-            buying_price: formData.purchase * item.total_qty,
+            buying_price: formData.purchase * qnt,
         };
 
         const postData = prepareFormData(final_data);
@@ -117,9 +121,12 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
         }
     };
 
-    const renderRate = () => (type === "purchase" || type === "high" || type === "low" ? (item.buying_price / item.total_qty || 0).toFixed(1) : rate.toFixed(1));
+    const renderQnt = () => (type !== "all" || type !== "short" ? qnt : item.total_qty);
+    const renderRate = () => (type === "purchase" || type === "high" || type === "low" || type === "p-s" ? (item.buying_price / item.total_qty || 0).toFixed(1) : rate.toFixed(1));
 
-    const renderAmount = () => (type === "purchase" || type === "high" || type === "low" ? (item.buying_price || 0).toFixed(1) : amount.toFixed(1));
+    const renderAmount = () => (type === "purchase" || type === "high" || type === "low" || type === "p-s" ? (item.buying_price || 0).toFixed(1) : amount.toFixed(1));
+
+    console.log("renderQnt---", renderQnt());
 
     return (
         <>
@@ -159,12 +166,27 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
                                 <CgShortcut className="text-white" />
                             </button>
                         )}
+
+                        {(type === "purchase" || type === "p-s") && !isSpecial && (
+                            <>
+                                {!item.isPs ? (
+                                    <button onClick={() => toggleIsPs(item.product_id)} className=" px-2 py-1 bg-warning_main text-white absolute right-2 text-caption rounded top-1/2 -translate-y-1/2 ">
+                                        PS
+                                    </button>
+                                ) : (
+                                    <button onClick={() => toggleIsPs(item.product_id)} className=" px-2 py-1 bg-warning_main text-white absolute right-2 text-caption rounded top-1/2 -translate-y-1/2 ">
+                                        Pur
+                                    </button>
+                                )}
+                            </>
+                        )}
                     </div>
 
                     {IsAdd && (
-                        <form onSubmit={handleSubmit(handlePurchaseSubmit)} className="bg-white z-50 rounded-md flex items-center justify-center">
-                            <input {...register("purchase", { required: true })} placeholder="Enter Purchase" className="text-subtitle2 placeholder:text-subtitle2 w-1/2 outline-none border rounded-l px-4 py-[4px]" />
-                            <button type="submit" className="text-body2 font-medium px-8 py-1 rounded-r text-white bg-success_main capitalize border w-1/2">
+                        <form onSubmit={handleSubmit(handlePurchaseSubmit)} className="bg-white z-50 rounded-md flex items-center border justify-center">
+                            <input {...register("purchase", { required: true })} placeholder="Enter Purchase" className="text-subtitle2 placeholder:text-subtitle2 border-r-[2px] w-1/2 outline-none rounded-l px-4 py-[4px]" />
+                            <input {...register("qnt")} placeholder="Q/t" className=" w-12 px-2 py-[4px] outline-none" />
+                            <button type="submit" className="text-body2 font-medium px-8 py-1.5 rounded-r text-white bg-success_main capitalize border w-1/2">
                                 Add
                             </button>
                         </form>

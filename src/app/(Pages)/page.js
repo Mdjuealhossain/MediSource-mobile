@@ -11,8 +11,8 @@ import { set } from "react-hook-form";
 
 const Home = () => {
     const [isSpecial, setIsSpecial] = useState(false);
+    const { setIsData, isFilterData, activeTab, isPurchase, isShort, setTitle, initializePurchases, purchases, toggleIsPs } = useTab();
 
-    const { setIsData, isFilterData, activeTab, isPurchase, isShort, setTitle } = useTab();
     const presentDate = getFormattedDate(isFilterData?.date);
 
     const date = new Date();
@@ -23,7 +23,7 @@ const Home = () => {
         date: presentDate || previousDay,
         pagination: 5000,
         district: isFilterData?.district?.id || "1",
-        area_id: isFilterData?.area?.id,
+        area_id: isFilterData?.area?.id || "11",
         user_id: isFilterData?.user?.id,
         isShort: isShort,
         isPurchase: isPurchase,
@@ -31,8 +31,17 @@ const Home = () => {
 
     const { data } = useAddPurchaseInfo(info);
 
+    // purchase data
+    useEffect(() => {
+        if (data?.data?.product_list) {
+            initializePurchases(data.data.product_list);
+        }
+    }, [data]);
+
     const order = data?.data?.product_list;
-    const purchases = data?.data?.product_list?.filter((item) => item.buying_price > 0 && item.is_dr !== "1");
+    const purchases_lists = purchases.filter((item) => !item.isPs);
+    const ps_data = purchases?.filter((item) => item.isPs);
+    // const purchases = data?.data?.product_list?.filter((item) => item.buying_price > 0 && item.is_dr !== "1").map((item) => ({ ...item, isPs: false }));
 
     const short = data?.data?.product_list?.filter((item) => item.product_type == "short" && item.buying_price == 0);
     const all = data?.data?.product_list?.filter((item) => item.buying_price < 1 && item.product_type !== "short" && item.product_type !== "stock ");
@@ -51,6 +60,8 @@ const Home = () => {
     const orderSum = order?.reduce((sum, product) => sum + product.total_amount, 0);
     const drSum = dr?.reduce((sum, product) => sum + product.total_amount, 0);
     const shortSum = short?.reduce((sum, product) => sum + product.total_amount, 0);
+
+    // const final_purchase = purchases?.map((item) => ({ ...item, p_s: false }));
 
     useEffect(() => {
         if (activeTab == "order" && isSpecial) {
@@ -78,8 +89,11 @@ const Home = () => {
     const storPurchase = {
         date: data?.data?.date,
         district_id: data?.data?.district,
+        area_id: isFilterData?.area?.id || "11",
         total_amount: data?.data?.total_amount,
     };
+
+    console.log("data?.data---", data?.data);
 
     // ✅ Fixing isSpecial state update and console log issue
     useEffect(() => {
@@ -99,12 +113,12 @@ const Home = () => {
                     {!isSpecial
                         ? tabs?.data.map((content) => (
                               <div key={content.id} value={`${content.value}`}>
-                                  <Products products={activeTab == "purchase" ? purchases : activeTab == "high" ? high : activeTab == "low" ? low : activeTab == "short" ? short : activeTab == "dr" ? dr : activeTab == "all" ? all : []} storPurchase={storPurchase} IsAdd={content.value == "all" || content.value == "short"} type={activeTab} />
+                                  <Products products={activeTab == "purchase" ? purchases_lists : activeTab == "high" ? high : activeTab == "low" ? low : activeTab == "short" ? short : activeTab == "dr" ? dr : activeTab == "all" ? all : activeTab == "p-s" ? ps_data : []} storPurchase={storPurchase} IsAdd={content.value == "all" || content.value == "short"} type={activeTab} />
                               </div>
                           ))
                         : tabsPhone?.data.map((content) => (
                               <div key={content.id} value={`${content.value}`}>
-                                  <Products isSpecial={isSpecial} products={activeTab == "purchase" ? purchases : activeTab == "high" ? high : activeTab == "low" ? low : activeTab == "dr" ? dr : activeTab == "return" ? returned : order} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
+                                  <Products isSpecial={isSpecial} products={activeTab == "purchase" ? purchases_lists : activeTab == "high" ? high : activeTab == "low" ? low : activeTab == "dr" ? dr : activeTab == "return" ? returned : order} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
                               </div>
                           ))}
                 </Tabs>
@@ -119,6 +133,7 @@ const tabs = {
     data: [
         { id: 1, value: "all", name: "All" },
         { id: 2, value: "purchase", name: "Purchase" },
+        { id: 3, value: "p-s", name: "P-S" },
         { id: 7, value: "short", name: "Short" },
         { id: 4, value: "dr", name: "D-R" },
         { id: 5, value: "high", name: "High" },
