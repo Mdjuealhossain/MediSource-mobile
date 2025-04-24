@@ -81,6 +81,7 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
             console.error("Short request error:", err);
         }
     };
+
     const handleDr = async (data) => {
         const final_data = {
             ...data,
@@ -125,8 +126,6 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
     const renderRate = () => (type === "purchase" || type === "high" || type === "low" || type === "p-s" ? (item.buying_price / item.total_qty || 0).toFixed(1) : rate.toFixed(1));
 
     const renderAmount = () => (type === "purchase" || type === "high" || type === "low" || type === "p-s" ? (item.buying_price || 0).toFixed(1) : amount.toFixed(1));
-
-    console.log("renderQnt---", renderQnt());
 
     return (
         <>

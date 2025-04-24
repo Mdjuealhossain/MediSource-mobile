@@ -8,10 +8,19 @@ import useAddPurchaseInfo from "../hooks/useAddPurchaseInfo";
 import { getFormattedDate } from "../utilities/getFormattedDates";
 import AlartModal from "@/components/ErrorModal";
 import { set } from "react-hook-form";
+import useModal from "../hooks/useModal";
+import PurchaseModal from "@/components/PurchaseModal";
+import { prepareFormData } from "../utilities/prepareFormData";
+import useStorPurchase from "../hooks/useStorPurchase";
 
 const Home = () => {
+    const [success, setSuccess] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const [isMsg, setIsMsg] = useState(null);
     const [isSpecial, setIsSpecial] = useState(false);
-    const { setIsData, isFilterData, activeTab, isPurchase, isShort, setTitle, initializePurchases, purchases, toggleIsPs } = useTab();
+    const { isOpen: open, openModal, closeModal } = useModal();
+    const { setIsData, isFilterData, activeTab, isPurchase, isShort, setTitle, initializePurchases, purchases, setIsShort } = useTab();
+    const { purchases: expence } = useStorPurchase();
 
     const presentDate = getFormattedDate(isFilterData?.date);
 
@@ -61,8 +70,6 @@ const Home = () => {
     const drSum = dr?.reduce((sum, product) => sum + product.total_amount, 0);
     const shortSum = short?.reduce((sum, product) => sum + product.total_amount, 0);
 
-    // const final_purchase = purchases?.map((item) => ({ ...item, p_s: false }));
-
     useEffect(() => {
         if (activeTab == "order" && isSpecial) {
             setIsData(orderSum);
@@ -93,9 +100,8 @@ const Home = () => {
         total_amount: data?.data?.total_amount,
     };
 
-    console.log("data?.data---", data?.data);
+    console.log("data?.data---", order);
 
-    // ✅ Fixing isSpecial state update and console log issue
     useEffect(() => {
         if (typeof window !== "undefined") {
             const storedPhone = localStorage.getItem("phoneNumber");
@@ -106,8 +112,39 @@ const Home = () => {
         }
     }, []);
 
+    const handleExpense = async (value) => {
+        const final_data = {
+            ...storPurchase,
+            expense_amount: value,
+            product_id: "1",
+            product_type: "purchase",
+            buying_price: 0,
+            total_qty: 1,
+            is_dr: "1",
+            return_qty: "0",
+            high_low: "high",
+        };
+
+        const shortData = prepareFormData(final_data);
+        try {
+            const { success } = await expence(shortData);
+            if (success) {
+                setIsOpen(true);
+                setSuccess(true);
+                setIsMsg("Added successfully");
+                setIsShort((prev) => !prev);
+                // reset();
+            }
+        } catch (err) {
+            console.error("Short request error:", err);
+        }
+    };
+
     return (
-        <>
+        <div className=" relative">
+            <button onClick={openModal} className=" px-2 py-1 bg-warning_main text-white rounded absolute -top-[54px]  left-1/2 -translate-x-1/2">
+                Add Expense
+            </button>
             <div className=" my-4 px-4">
                 <Tabs tabs={isSpecial ? tabsPhone?.data : tabs?.data} contentClass={"md:mt-10 mt-6"} isSpecial={isSpecial}>
                     {!isSpecial
@@ -123,7 +160,9 @@ const Home = () => {
                           ))}
                 </Tabs>
             </div>
-        </>
+            <PurchaseModal onReturn={handleExpense} isOpen={open} closeModal={closeModal} placeholder={"enter Expense"} />
+            <AlartModal isOpen={isOpen} openModal={() => setIsOpen(true)} closeModal={() => setIsOpen(false)} message={isMsg} success={success} />
+        </div>
     );
 };
 

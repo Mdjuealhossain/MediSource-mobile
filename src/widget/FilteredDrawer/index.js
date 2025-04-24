@@ -14,15 +14,12 @@ import { useTab } from "@/app/contexApi";
 import useArea from "@/app/hooks/useArea";
 import "react-calendar-datetime-picker/dist/style.css";
 import "react-modern-drawer/dist/index.css";
-import PurchaseModal from "@/components/PurchaseModal";
-import useModal from "@/app/hooks/useModal";
 
 const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
-    const { isOpen: open, openModal, closeModal } = useModal();
     const [defaultDate, setDefaultDate] = useState(null);
     const { data } = useGetDistrict();
     const { data: areaData } = useArea();
-    const { isFilterData, setIsFilterData } = useTab();
+    const { setIsFilterData } = useTab();
     const [search, setSearch] = React.useState("");
 
     const params = {
@@ -47,13 +44,6 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
 
     const [formState, setFormState] = React.useState(null); // <-- Store form state
 
-    // useEffect(() => {
-    //     if (isOpen && formState) {
-    //         reset(formState); // <-- Restore form values when the drawer is opened
-    //     }
-    // }, [isOpen, formState, reset]);
-    // if (!isOpen) return null;
-
     const onSubmit = (data) => {
         setIsFilterData(data);
         setFormState(data); // <-- Store form state on submit
@@ -62,14 +52,14 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
 
     useEffect(() => {
         if (!isOpen) {
-            setFormState(null); // Reset form state when drawer is closed, but form won't reset
+            setFormState(null);
         }
     }, [isOpen]);
 
     const logout = () => {
         if (typeof window !== "undefined") {
             localStorage.clear();
-            clearCookie("authToken"); // Replace "user" with your actual cookie name
+            clearCookie("authToken");
 
             window.location.href = "/login";
         }
@@ -77,12 +67,10 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
 
     useEffect(() => {
         const date = new Date();
-        date.setDate(date.getDate() - 1); // Subtract 1 day for previous day
-        const previousDay = date.toISOString().split("T")[0]; // Format to YYYY-MM-DD
+        date.setDate(date.getDate() - 1);
+        const previousDay = date.toISOString().split("T")[0];
         setDefaultDate(previousDay);
     }, []);
-
-    const handleExpense = () => {};
 
     return (
         <>
@@ -91,9 +79,6 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
                     <div className="bg-white mb-4">
                         <div className="flex items-center justify-between px-4 py-3 border-b">
                             <h6 className="text-H6 font-semibold">Filters</h6>
-                            <button onClick={openModal} className=" px-2 py-1 bg-success_main text-white rounded">
-                                Add Expense
-                            </button>
                             <span onClick={toggleDrawer} className="cursor-pointer">
                                 <IoMdClose size={24} />
                             </span>
@@ -182,7 +167,6 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
                         </button>
                     </form>
                 </div>
-                <PurchaseModal onReturn={handleExpense} isOpen={open} closeModal={closeModal} placeholder={"enter Expense"} />
             </Drawer>
         </>
     );
