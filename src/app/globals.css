@@ -2,12 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
-
 body {
-    @apply font-poppins text-body1 font-normal bg-default text-primary;
-  
+    @apply font-poppins text-body1 font-normal bg-default text-black;
 }
 
 .no-scrollbar {
@@ -16,16 +12,15 @@ body {
     scrollbar-width: none; /* Hides scrollbar in Firefox */
 }
 
-.calender-modal{
+.calender-modal {
     width: 100% !important;
 }
 
 .custom-input {
     text-align: left !important;
     box-shadow: none !important;
-
 }
 
 .react-calendar-datetime-picker .input-picker .input-picker--input {
-   @apply !border-gary_700
+    @apply !border-gary_700;
 }

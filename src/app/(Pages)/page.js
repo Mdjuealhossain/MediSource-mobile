@@ -2,24 +2,22 @@
 import { useEffect, useState } from "react";
 
 import Products from "@/widget/Products";
-import { useTab } from "../contexApi";
 import Tabs from "@/components/Tabs";
-import useAddPurchaseInfo from "../hooks/useAddPurchaseInfo";
 import { getFormattedDate } from "../utilities/getFormattedDates";
-import AlartModal from "@/components/ErrorModal";
-import { set } from "react-hook-form";
-import useModal from "../hooks/useModal";
-import PurchaseModal from "@/components/PurchaseModal";
 import { prepareFormData } from "../utilities/prepareFormData";
+import useAddPurchaseInfo from "../hooks/useAddPurchaseInfo";
+import PurchaseModal from "@/components/PurchaseModal";
 import useStorPurchase from "../hooks/useStorPurchase";
+import AlartModal from "@/components/ErrorModal";
+import useModal from "../hooks/useModal";
+import { useTab } from "../contexApi";
 
 const Home = () => {
     const [success, setSuccess] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [isMsg, setIsMsg] = useState(null);
-    const [isSpecial, setIsSpecial] = useState(false);
     const { isOpen: open, openModal, closeModal } = useModal();
-    const { setIsData, isFilterData, activeTab, isPurchase, isShort, setTitle, initializePurchases, purchases, setIsShort } = useTab();
+    const { setIsData, isFilterData, activeTab, isPurchase, isShort, setTitle, initializePurchases, purchases, setIsShort, isSpecial, setIsSpecial } = useTab();
     const { purchases: expence } = useStorPurchase();
 
     const date = new Date();
@@ -82,8 +80,9 @@ const Home = () => {
     const purchaseTotalAmountSumIsSpecial = purchases_lists?.reduce((sum, product) => sum + product.total_amount, 0);
     const drSum = dr?.reduce((sum, product) => sum + product.total_amount, 0);
     const returnedSum = returned?.reduce((sum, product) => sum + product.total_amount, 0);
+    const stock = allPurchaseData?.filter((item) => item.stock);
 
-    console.log("purchases----", dr);
+    console.log("purchases----", all);
 
     useEffect(() => {
         if (activeTab == "all" && !isSpecial) {
@@ -168,10 +167,10 @@ const Home = () => {
 
     return (
         <div className=" relative">
-            <button onClick={openModal} className=" px-2 py-1 bg-warning_main text-white rounded absolute -top-[54px] right-14">
+            <button onClick={openModal} className=" px-2 py-1 bg-warning_main text-white rounded absolute -top-9 right-14">
                 Add Expense
             </button>
-            <div className=" my-4 px-4">
+            <div className=" py-6 px-4">
                 <Tabs tabs={isSpecial ? tabsPhone?.data : tabs?.data} contentClass={"md:mt-10 mt-6"} isSpecial={isSpecial}>
                     {!isSpecial
                         ? tabs?.data.map((content) => (

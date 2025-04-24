@@ -11,6 +11,7 @@ export function ProductProvider({ children }) {
     const [isFilterData, setIsFilterData] = useState({});
     const [isPurchase, setIsPurchase] = useState(false);
     const [dontReceived, setDontReceived] = useState([]);
+    const [isSpecial, setIsSpecial] = useState(false);
     const [isShort, setIsShort] = useState("");
 
     const [title, setTitle] = useState("");
@@ -63,6 +64,8 @@ export function ProductProvider({ children }) {
                 purchases,
                 initializePurchases,
                 toggleIsPs,
+                isSpecial,
+                setIsSpecial,
             }}
         >
             {children}

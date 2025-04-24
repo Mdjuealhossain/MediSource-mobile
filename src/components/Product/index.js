@@ -34,15 +34,17 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
     const rate = item.rate - (item.rate * 4) / 100;
     const amount = rate * item.total_qty;
 
+    const final_qnt = item.total_qty - item.stock;
+
     const handlePurchaseSubmit = async (formData) => {
-        const qnt = formData.qnt ? formData.qnt : item.total_qty;
-        setQnt(qnt);
+        // const qnt = formData.qnt ? formData.qnt : item.total_qty;
+        // setQnt(qnt);
 
         const final_data = {
             ...formData,
             ...item,
             ...storPurchase,
-            buying_price: formData.purchase * qnt,
+            buying_price: formData.purchase * final_qnt,
         };
 
         const postData = prepareFormData(final_data);
@@ -122,32 +124,37 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
         }
     };
 
-    const renderQnt = () => (type !== "all" || type !== "short" ? qnt : item.total_qty);
+    // const renderQnt = () => (type !== "all" || type !== "short" ? qnt : item.total_qty);
     const renderRate = () => (type === "purchase" || type === "high" || type === "low" || type === "p-s" ? (item.buying_price / item.total_qty || 0).toFixed(1) : rate.toFixed(1));
 
     const renderAmount = () => (type === "purchase" || type === "high" || type === "low" || type === "p-s" ? (item.buying_price || 0).toFixed(1) : amount.toFixed(1));
+
+    // console.log("first---", item.stock);
 
     return (
         <>
             <div className="flex items-center gap-1 w-full">
                 <p className="font-medium text-subtitle1">{index + 1}.</p>
                 <div className="w-full">
-                    <div className="px-3 relative mb-1 py-2 rounded border border-gary_700 w-full bg-paper">
+                    <div className={`px-3 relative mb-1 py-2 rounded border border-gary_700 w-full bg-paper ${item.stock > 0 && type == "all" ? " bg-black/20" : " bg-paper"}`}>
                         <h6 className="text-H6 font-medium mb-1">{item.name || "Unknown name"}</h6>
-                        <div className="flex items-center gap-0.5">
-                            <p className="text-body2">
-                                Qty: <span className="font-semibold pl-1">{item.total_qty}</span>
-                            </p>
-                            <span className="px-1">|</span>
-                            <p className="text-body2">
-                                R: <span className={`font-semibold pl-1 ${isSpecial ? "hidden" : "inline"}`}>{renderRate()} TK</span>
-                                <span className={`font-semibold pl-1 ${!isSpecial ? "hidden" : "inline"}`}>{(item.rate || 0).toFixed(2)} TK</span>
-                            </p>
-                            <span className="px-1">|</span>
-                            <p className="text-body2">
-                                A: <span className={`font-semibold pl-1 ${isSpecial ? "hidden" : "inline"}`}>{renderAmount()} TK</span>
-                                <span className={`font-semibold pl-1 ${!isSpecial ? "hidden" : "inline"}`}>{(item.total_amount || 0).toFixed(2)} TK</span>
-                            </p>
+                        <div className=" flex items-center justify-between">
+                            <div className="flex items-center gap-0.5">
+                                <p className="text-body2">
+                                    Qty: <span className="font-semibold pl-1">{item.total_qty}</span>
+                                </p>
+                                <span className="px-1">|</span>
+                                <p className="text-body2">
+                                    R: <span className={`font-semibold pl-1 ${isSpecial ? "hidden" : "inline"}`}>{renderRate()} TK</span>
+                                    <span className={`font-semibold pl-1 ${!isSpecial ? "hidden" : "inline"}`}>{(item.rate || 0).toFixed(2)} TK</span>
+                                </p>
+                                <span className="px-1">|</span>
+                                <p className="text-body2">
+                                    A: <span className={`font-semibold pl-1 ${isSpecial ? "hidden" : "inline"}`}>{renderAmount()} TK</span>
+                                    <span className={`font-semibold pl-1 ${!isSpecial ? "hidden" : "inline"}`}>{(item.total_amount || 0).toFixed(2)} TK</span>
+                                </p>
+                            </div>
+                            {item.stock > 0 && type == "all" && <p className=" text-sm font-semibold text-info_main">{item.stock}</p>}
                         </div>
                         {isSpecial && type === "purchase" && (
                             <button disabled={item.is_dr == "1"} onClick={() => handleDr(item)} className={`px-4 py-1  text-warning_main absolute right-0 top-0 ${item.is_dr == "1" ? "bg-success_main/40" : "bg-success_main"}`}>
@@ -181,7 +188,7 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
                         )}
                     </div>
 
-                    {IsAdd && (
+                    {IsAdd && final_qnt > 0 && (
                         <form onSubmit={handleSubmit(handlePurchaseSubmit)} className="bg-white z-50 rounded-md flex items-center border justify-center">
                             <input {...register("purchase", { required: true })} placeholder="Enter Purchase" className="text-subtitle2 placeholder:text-subtitle2 border-r-[2px] w-1/2 outline-none rounded-l px-4 py-[4px]" />
                             <input {...register("qnt")} placeholder="Q/t" className=" w-12 px-2 py-[4px] outline-none" />

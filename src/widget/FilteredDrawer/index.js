@@ -14,6 +14,7 @@ import { useTab } from "@/app/contexApi";
 import useArea from "@/app/hooks/useArea";
 import "react-calendar-datetime-picker/dist/style.css";
 import "react-modern-drawer/dist/index.css";
+import Link from "next/link";
 
 const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
     const [defaultDate, setDefaultDate] = useState(null);
@@ -86,7 +87,7 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
                     </div>
                     <form className="px-4 py-2" onSubmit={handleSubmit(onSubmit)}>
                         {/* Date Picker */}
-                        <div className="flex flex-col gap-3 mb-6">
+                        <div className="flex flex-col gap-3 mb-12">
                             <div className="flex flex-col gap-2">
                                 <label className="font-semibold">Date</label>
                                 <Controller
@@ -158,13 +159,18 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
                             </div>
                         </div>
 
-                        {/* Submit Button */}
-                        <button type="submit" className="cursor-pointer w-full px-4 py-2 text-subtitle2 bg-success_main text-white rounded">
-                            Search
-                        </button>
-                        <button type="button" onClick={logout} className="cursor-pointer w-full px-4 mt-4 py-2 text-subtitle2 bg-warning_main text-white rounded">
-                            logout
-                        </button>
+                        <div className=" flex items-center flex-col gap-3">
+                            <button type="submit" className="cursor-pointer w-full px-4 py-2 text-subtitle2 bg-success_main text-white rounded">
+                                Search
+                            </button>
+                            <Link href="/report" onClick={toggleDrawer} type="submit" className="cursor-pointer w-full px-4 flex items-center justify-center py-2 text-subtitle2 bg-info_main text-white rounded">
+                                Report
+                            </Link>
+                            {/* Submit Button */}
+                            <button type="button" onClick={logout} className="cursor-pointer w-full px-4  py-2 text-subtitle2 bg-warning_main text-white rounded">
+                                logout
+                            </button>
+                        </div>
                     </form>
                 </div>
             </Drawer>
