@@ -22,11 +22,10 @@ const Home = () => {
     const { setIsData, isFilterData, activeTab, isPurchase, isShort, setTitle, initializePurchases, purchases, setIsShort } = useTab();
     const { purchases: expence } = useStorPurchase();
 
-    const presentDate = getFormattedDate(isFilterData?.date);
-
     const date = new Date();
     date.setDate(date.getDate() - 1);
     const previousDay = date.toISOString().split("T")[0];
+    const presentDate = getFormattedDate(isFilterData?.date);
 
     const info = {
         date: presentDate || previousDay,
@@ -37,61 +36,91 @@ const Home = () => {
         isShort: isShort,
         isPurchase: isPurchase,
     };
-
     const { data } = useAddPurchaseInfo(info);
+    const allPurchaseData = data?.data?.product_list;
 
     // purchase data
     useEffect(() => {
-        if (data?.data?.product_list) {
-            initializePurchases(data.data.product_list);
+        if (allPurchaseData?.length > 0) {
+            initializePurchases(allPurchaseData);
         }
     }, [data]);
 
-    const order = data?.data?.product_list;
     const purchases_lists = purchases.filter((item) => !item.isPs);
-    const ps_data = purchases?.filter((item) => item.isPs);
-    // const purchases = data?.data?.product_list?.filter((item) => item.buying_price > 0 && item.is_dr !== "1").map((item) => ({ ...item, isPs: false }));
 
-    const short = data?.data?.product_list?.filter((item) => item.product_type == "short" && item.buying_price == 0);
-    const all = data?.data?.product_list?.filter((item) => item.buying_price < 1 && item.product_type !== "short" && item.product_type !== "stock ");
-    const high = purchases?.filter((item) => item.buying_price > (item.rate - (item.rate * 4) / 100) * item.total_qty * 1.01);
-    const dr = data?.data?.product_list?.filter((item) => item.buying_price > 0 && item.is_dr == "1");
+    const ps_data = purchases?.filter((item) => item.isPs);
+    const short = allPurchaseData?.filter((item) => item.product_type == "short" && item.buying_price == 0);
+    const all = allPurchaseData?.filter((item) => item.buying_price < 1 && item.product_type !== "short" && item.product_type !== "stock ");
+    const dr = allPurchaseData?.filter((item) => item.buying_price > 0 && item.is_dr == "1");
     const returned = purchases?.filter((item) => item.return_qty);
 
-    const test = data?.data?.product_list?.filter((item) => item.product_id == "1638");
-
+    // with 4% -
+    const high = purchases?.filter((item) => item.buying_price > (item.rate - (item.rate * 4) / 100) * item.total_qty * 1.01);
     const low = purchases?.filter((item) => item.buying_price < (item.rate - (item.rate * 4) / 100) * item.total_qty * 0.99);
 
-    const purcgaseTotalAmountSum = purchases?.reduce((sum, product) => sum + product.buying_price, 0);
+    // admin
+    const purchaseTotalAmountSum = purchases_lists?.reduce((sum, product) => sum + product.buying_price, 0);
+    const PsTotalAmountSum = ps_data?.reduce((sum, product) => sum + product.buying_price, 0);
 
+    // admin 4%
+    const all_sum = purchases?.reduce((sum, product) => sum + product.buying_price, 0);
     const purcgaseSpecialTotalAmountSum = purchases?.reduce((sum, product) => sum + product.total_amount, 0);
 
-    const orderSum = order?.reduce((sum, product) => sum + product.total_amount, 0);
+    const totalDiscountedAmountAllorde = all?.reduce((sum, product) => {
+        const discountedRate = product.rate - (product.rate * 4) / 100;
+        const discountedAmount = discountedRate * product.total_qty;
+        return sum + discountedAmount;
+    }, 0);
+    const totalDiscountedAmountAllShort = short?.reduce((sum, product) => {
+        const discountedRate = product.rate - (product.rate * 4) / 100;
+        const discountedAmount = discountedRate * product.total_qty;
+        return sum + discountedAmount;
+    }, 0);
+
+    // special admin
+    const orderSum = allPurchaseData?.reduce((sum, product) => sum + product.total_amount, 0);
+    const purchaseTotalAmountSumIsSpecial = purchases_lists?.reduce((sum, product) => sum + product.total_amount, 0);
     const drSum = dr?.reduce((sum, product) => sum + product.total_amount, 0);
-    const shortSum = short?.reduce((sum, product) => sum + product.total_amount, 0);
+    const returnedSum = returned?.reduce((sum, product) => sum + product.total_amount, 0);
+
+    console.log("purchases----", dr);
 
     useEffect(() => {
+        if (activeTab == "all" && !isSpecial) {
+            setIsData(totalDiscountedAmountAllorde);
+            setTitle("Order");
+        }
+        if (activeTab == "purchase" && !isSpecial) {
+            setIsData(purchaseTotalAmountSum);
+            setTitle("Purchase");
+        }
+        if (activeTab == "p-s" && !isSpecial) {
+            setIsData(PsTotalAmountSum);
+            setTitle("P-S");
+        }
+
+        if (activeTab == "short" && !isSpecial) {
+            setIsData(totalDiscountedAmountAllShort);
+            setTitle("Short");
+        }
+
         if (activeTab == "order" && isSpecial) {
             setIsData(orderSum);
             setTitle("Order");
         }
         if (activeTab == "purchase" && isSpecial) {
-            setIsData(purcgaseSpecialTotalAmountSum);
-            setTitle("Purchase");
-        }
-        if (!isSpecial && activeTab == "purchase") {
-            setIsData(purcgaseTotalAmountSum);
+            setIsData(purchaseTotalAmountSumIsSpecial);
             setTitle("Purchase");
         }
         if (activeTab == "dr") {
             setIsData(drSum);
             setTitle("D-R");
         }
-        if (!isSpecial && activeTab == "short") {
-            setIsData(shortSum);
-            setTitle("Short");
+        if (activeTab == "return" && isSpecial) {
+            setIsData(returnedSum);
+            setTitle("Return");
         }
-    }, [activeTab, data]);
+    }, [activeTab, data, purchases_lists]);
 
     const storPurchase = {
         date: data?.data?.date,
@@ -99,8 +128,6 @@ const Home = () => {
         area_id: isFilterData?.area?.id || "11",
         total_amount: data?.data?.total_amount,
     };
-
-    console.log("data?.data---", order);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -133,7 +160,6 @@ const Home = () => {
                 setSuccess(true);
                 setIsMsg("Added successfully");
                 setIsShort((prev) => !prev);
-                // reset();
             }
         } catch (err) {
             console.error("Short request error:", err);
@@ -142,7 +168,7 @@ const Home = () => {
 
     return (
         <div className=" relative">
-            <button onClick={openModal} className=" px-2 py-1 bg-warning_main text-white rounded absolute -top-[54px]  left-1/2 -translate-x-1/2">
+            <button onClick={openModal} className=" px-2 py-1 bg-warning_main text-white rounded absolute -top-[54px] right-14">
                 Add Expense
             </button>
             <div className=" my-4 px-4">
@@ -155,7 +181,7 @@ const Home = () => {
                           ))
                         : tabsPhone?.data.map((content) => (
                               <div key={content.id} value={`${content.value}`}>
-                                  <Products isSpecial={isSpecial} products={activeTab == "purchase" ? purchases_lists : activeTab == "high" ? high : activeTab == "low" ? low : activeTab == "dr" ? dr : activeTab == "return" ? returned : order} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
+                                  <Products isSpecial={isSpecial} products={activeTab == "purchase" ? purchases_lists : activeTab == "high" ? high : activeTab == "low" ? low : activeTab == "dr" ? dr : activeTab == "return" ? returned : allPurchaseData} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
                               </div>
                           ))}
                 </Tabs>

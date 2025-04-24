@@ -18,7 +18,6 @@ export function ProductProvider({ children }) {
     const toggleIsPs = (id) => {
         setPurchases((prev) => {
             const updated = prev.map((item) => (item.product_id === id ? { ...item, isPs: !item.isPs } : item));
-
             const isPsMap = {};
             updated.forEach((item) => {
                 isPsMap[item.product_id] = item.isPs;
@@ -38,6 +37,8 @@ export function ProductProvider({ children }) {
                 ...item,
                 isPs: storedIsPsMap[item.product_id] || false,
             }));
+
+        // const final_filtered
 
         setPurchases(filtered);
     };

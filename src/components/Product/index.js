@@ -141,12 +141,12 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
                             <span className="px-1">|</span>
                             <p className="text-body2">
                                 R: <span className={`font-semibold pl-1 ${isSpecial ? "hidden" : "inline"}`}>{renderRate()} TK</span>
-                                <span className={`font-semibold pl-1 ${!isSpecial ? "hidden" : "inline"}`}>{(item.rate || 0).toFixed(1)} TK</span>
+                                <span className={`font-semibold pl-1 ${!isSpecial ? "hidden" : "inline"}`}>{(item.rate || 0).toFixed(2)} TK</span>
                             </p>
                             <span className="px-1">|</span>
                             <p className="text-body2">
                                 A: <span className={`font-semibold pl-1 ${isSpecial ? "hidden" : "inline"}`}>{renderAmount()} TK</span>
-                                <span className={`font-semibold pl-1 ${!isSpecial ? "hidden" : "inline"}`}>{(item.total_amount || 0).toFixed(1)} TK</span>
+                                <span className={`font-semibold pl-1 ${!isSpecial ? "hidden" : "inline"}`}>{(item.total_amount || 0).toFixed(2)} TK</span>
                             </p>
                         </div>
                         {isSpecial && type === "purchase" && (
