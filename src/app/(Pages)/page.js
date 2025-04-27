@@ -131,6 +131,7 @@ const Home = () => {
         district_id: data?.data?.district,
         area_id: isFilterData?.area?.id || "11",
         total_amount: data?.data?.total_amount,
+        expense_amount: data?.data?.purchase.expense_amount,
     };
 
     const purchaseSums = useMemo(() => {
