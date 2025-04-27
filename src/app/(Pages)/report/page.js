@@ -9,10 +9,7 @@ import { MdOutlineArrowRightAlt } from "react-icons/md";
 
 const Report = () => {
     const { isFilterData, isSpecial } = useTab();
-    const { total } = useTab();
     const { isOpen, openModal, closeModal } = useModal();
-
-    console.log("total---", total.purchase);
 
     const handleCosts = (value) => {
         // console.log("value", value);
