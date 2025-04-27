@@ -11,6 +11,8 @@ import useStorPurchase from "../hooks/useStorPurchase";
 import AlartModal from "@/components/ErrorModal";
 import useModal from "../hooks/useModal";
 import { useTab } from "../contexApi";
+import { useDispatch, useSelector } from "react-redux";
+import { setAllSums } from "../utilities/sumSlice";
 
 const Home = () => {
     const [success, setSuccess] = useState(false);
@@ -127,6 +129,23 @@ const Home = () => {
         }
     }, [activeTab, data, purchases_lists]);
 
+    const sums = useSelector((state) => state.sums);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(
+            setAllSums({
+                totalDiscountedAmountAllorde: totalDiscountedAmountAllorde,
+                purchaseTotalAmountSum: purchaseTotalAmountSum,
+                PsTotalAmountSum: PsTotalAmountSum,
+                totalDiscountedAmountAllShort: totalDiscountedAmountAllShort,
+                purchaseTotalAmountSumIsSpecial: purchaseTotalAmountSumIsSpecial,
+                returnedSum: returnedSum,
+                totalStockAmount: totalStockAmount,
+            })
+        );
+    }, [dispatch, purchases_lists]);
+
     const storPurchase = {
         date: data?.data?.date,
         district_id: data?.data?.district,
@@ -181,6 +200,16 @@ const Home = () => {
                 <button onClick={openModal} className=" px-2 py-1 bg-warning_main text-white rounded ">
                     +
                 </button>
+            </div>
+            <div className="p-6 space-y-4">
+                <h1 className="text-2xl font-bold">Sum Values</h1>
+                <ul className="list-disc pl-6">
+                    {Object.entries(sums).map(([key, value]) => (
+                        <li key={key}>
+                            <strong>{key}:</strong> {value}
+                        </li>
+                    ))}
+                </ul>
             </div>
 
             <div className=" py-6 px-4">

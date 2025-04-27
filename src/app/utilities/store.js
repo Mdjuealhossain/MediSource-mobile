@@ -1,9 +1,10 @@
-"use client";
 import { configureStore } from "@reduxjs/toolkit";
-import counterReducer from "./counterSlice";
+import sumReducer from "./sumSlice";
 
-export const store = configureStore({
+const store = configureStore({
     reducer: {
-        counter: counterReducer,
+        sums: sumReducer,
     },
 });
+
+export default store;
