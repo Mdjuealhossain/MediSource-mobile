@@ -1,22 +1,40 @@
 "use client";
-import { decrement, increment } from "@/app/utilities/counterSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useTab } from "@/app/contexApi";
+import { useEffect, useState } from "react";
 
-export default function Home() {
-    const dispatch = useDispatch();
-    const count = useSelector((state) => state.counter.value);
+const ReportPage = () => {
+    const { isFilterData } = useTab();
+    // const [filterData, setFilterData] = useState({
+    //     date: "",
+    //     district: null,
+    //     area: null,
+    // });
+
+    // useEffect(() => {
+    //     const storedData = JSON.parse(localStorage.getItem("filterData"));
+    //     if (storedData) {
+    //         setFilterData({
+    //             date: storedData.date,
+    //             district: storedData.district,
+    //             area: storedData.area,
+    //         });
+    //     }
+    // }, []);
 
     return (
-        <div className="flex justify-center items-center flex-col min-h-screen">
-            <h1 className="text-2xl font-bold">Counter: {count}</h1>
-            <div className="flex space-x-4 mt-4">
-                <button onClick={() => dispatch(increment())} className="bg-blue-500 text-white py-2 px-4 rounded">
-                    Increment
-                </button>
-                <button onClick={() => dispatch(decrement())} className="bg-red-500 text-white py-2 px-4 rounded">
-                    Decrement
-                </button>
-            </div>
+        <div className="p-4">
+            <h2 className="text-xl font-bold mb-4">Selected Filter Data</h2>
+            <p>
+                <strong>Date:</strong> {isFilterData.date}
+            </p>
+            <p>
+                <strong>District:</strong> {isFilterData.district?.label}
+            </p>
+            <p>
+                <strong>Area:</strong> {isFilterData.area?.label}
+            </p>
         </div>
     );
-}
+};
+
+export default ReportPage;

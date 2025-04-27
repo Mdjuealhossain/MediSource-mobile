@@ -1,180 +1,239 @@
 "use client";
-import React, { useEffect, useState } from "react";
+
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { useForm, Controller } from "react-hook-form";
-const Drawer = dynamic(() => import("react-modern-drawer"), { ssr: false });
-import { DtPicker } from "react-calendar-datetime-picker";
 import { IoMdClose } from "react-icons/io";
-import Select from "@/components/Select";
+import Select from "react-select";
+import { useForm, Controller } from "react-hook-form";
+import { DtPicker } from "react-calendar-datetime-picker";
 
 import useGetDistrict from "@/app/hooks/useDistrict";
-import { clearCookie } from "@/app/utilities/cookies";
 import useUserList from "@/app/hooks/useUserList";
-import { useTab } from "@/app/contexApi";
 import useArea from "@/app/hooks/useArea";
+import { useTab } from "@/app/contexApi";
+import { clearCookie } from "@/app/utilities/cookies";
+
 import "react-calendar-datetime-picker/dist/style.css";
 import "react-modern-drawer/dist/index.css";
 import Link from "next/link";
 
+const Drawer = dynamic(() => import("react-modern-drawer"), { ssr: false });
+
 const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
-    const [defaultDate, setDefaultDate] = useState(null);
-    const { data } = useGetDistrict();
+    const { data: districtData } = useGetDistrict();
     const { data: areaData } = useArea();
-    const { setIsFilterData } = useTab();
-    const [search, setSearch] = React.useState("");
+    const [search, setSearch] = useState("");
+    const { data: userData } = useUserList({ search, pagination: 5000 });
+    const { setIsFilterData, isFilterData } = useTab();
 
-    const params = {
-        search: search,
-        pagination: 5000,
-    };
-
-    const { data: user } = useUserList(params);
     const {
         control,
         handleSubmit,
         formState: { errors },
-        reset, // <-- Add this line to access reset function
+        reset,
+        setValue,
+        getValues,
     } = useForm({
         defaultValues: {
+            date: "",
             district: null,
             area: null,
-            date: null,
             user: null,
         },
     });
 
-    const [formState, setFormState] = React.useState(null); // <-- Store form state
+    const district_options = districtData?.data?.map((item) => ({
+        value: item.id,
+        label: item.name,
+    }));
 
-    const onSubmit = (data) => {
-        setIsFilterData(data);
-        setFormState(data); // <-- Store form state on submit
-        toggleDrawer();
+    const area_options = [
+        { value: "all", label: "All Areas" },
+        ...(Array.isArray(areaData?.data)
+            ? areaData.data.map((item) => ({
+                  value: item.id,
+                  label: item.name,
+              }))
+            : []),
+    ];
+
+    const user_options = userData?.data?.data?.map((item) => ({
+        value: item.id,
+        label: item.name,
+    }));
+
+    const updateLocalStorage = (formData) => {
+        localStorage.setItem("filterData", JSON.stringify(formData));
     };
 
-    useEffect(() => {
-        if (!isOpen) {
-            setFormState(null);
-        }
-    }, [isOpen]);
+    const onSubmit = (formData) => {
+        toggleDrawer();
+        updateLocalStorage(formData);
+        setIsFilterData(formData);
+    };
 
     const logout = () => {
         if (typeof window !== "undefined") {
             localStorage.clear();
             clearCookie("authToken");
-
             window.location.href = "/login";
         }
     };
 
+    const handleChange = (name, value) => {
+        setValue(name, value);
+        const currentData = getValues();
+        updateLocalStorage(currentData);
+    };
+
     useEffect(() => {
-        const date = new Date();
-        date.setDate(date.getDate() - 1);
-        const previousDay = date.toISOString().split("T")[0];
-        setDefaultDate(previousDay);
-    }, []);
+        if (districtData?.data?.length && areaData?.data?.length) {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayISO = yesterday.toISOString().split("T")[0];
+
+            const defaultDistrict = districtData.data.find((item) => item.name === "Dhaka");
+            const defaultArea = areaData.data[0];
+
+            const savedData = JSON.parse(localStorage.getItem("filterData"));
+
+            if (savedData) {
+                setValue("date", savedData.date || yesterdayISO);
+                setValue("district", savedData.district);
+                setValue("area", savedData.area);
+                setValue("user", savedData.user);
+            } else {
+                // If no saved filter, set defaults
+                setValue("date", yesterdayISO);
+                if (defaultDistrict) {
+                    setValue("district", { value: defaultDistrict.id, label: defaultDistrict.name });
+                }
+                if (defaultArea) {
+                    setValue("area", { value: defaultArea.id, label: defaultArea.name });
+                }
+            }
+        }
+    }, [districtData, areaData, setValue]);
 
     return (
-        <>
-            <Drawer open={isOpen} onClose={toggleDrawer} direction={direction} className="!w-[80%]">
-                <div className="h-full bg-secondary_bg">
-                    <div className="bg-white mb-4">
-                        <div className="flex items-center justify-between px-4 py-3 border-b">
-                            <h6 className="text-H6 font-semibold">Filters</h6>
-                            <span onClick={toggleDrawer} className="cursor-pointer">
-                                <IoMdClose size={24} />
-                            </span>
-                        </div>
+        <Drawer open={isOpen} onClose={toggleDrawer} direction={direction} className="!w-[80%]">
+            <div className="h-full bg-secondary_bg">
+                {/* Header */}
+                <div className="bg-white mb-4">
+                    <div className="flex items-center justify-between px-4 py-3 border-b">
+                        <h6 className="text-H6 font-semibold">Filters</h6>
+                        <span onClick={toggleDrawer} className="cursor-pointer">
+                            <IoMdClose size={24} />
+                        </span>
                     </div>
-                    <form className="px-4 py-2" onSubmit={handleSubmit(onSubmit)}>
-                        {/* Date Picker */}
-                        <div className="flex flex-col gap-3 mb-12">
-                            <div className="flex flex-col gap-2">
-                                <label className="font-semibold">Date</label>
-                                <Controller
-                                    name="date"
-                                    control={control}
-                                    render={({ field }) => <DtPicker {...field} value={field.value} defaultValue={defaultDate} onChange={(val) => field.onChange(val)} calendarType="US" placeholder="Select a date" inputClass="!py-2 !h-[34px] custom-input !px-4 w-full rounded bg-white ring-gary_700 text-black bg-gray_500 text-body2 focus:ring-1 focus:ring-gary_700 focus:outline-none ring-1" />}
-                                />
-                            </div>
-                            {/* District Select */}
-                            <div className="flex flex-col gap-2">
-                                <label className="font-semibold">District</label>
-                                <Controller
-                                    name="district"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Select
-                                            {...field}
-                                            value={field.value}
-                                            defaultValue={data?.data[3]?.name}
-                                            placeholder="Select One"
-                                            multipleValu={false}
-                                            onChange={(val) => field.onChange(val)}
-                                            options={data?.data}
-                                            overlyClass="!bg-transparent"
-                                            inputClass="py-2  px-4 w-full rounded bg-white ring-gary_700 text-black bg-gray_500 text-body2 focus:ring-1 focus:ring-gary_700 focus:outline-none ring-1"
-                                        />
-                                    )}
-                                />
-                            </div>
-                            <div className="flex flex-col gap-2 ">
-                                <label className="font-semibold">Area</label>
-                                <Controller
-                                    name="area"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Select
-                                            {...field}
-                                            value={field.value}
-                                            defaultValue={areaData?.data[0]?.name}
-                                            placeholder="Select One"
-                                            multipleValu={false}
-                                            onChange={(val) => field.onChange(val)}
-                                            options={areaData?.data}
-                                            overlyClass="!bg-transparent"
-                                            inputClass="py-2  px-4 w-full rounded bg-white ring-gary_700 text-black bg-gray_500 text-body2 focus:ring-1 focus:ring-gary_700 focus:outline-none ring-1"
-                                        />
-                                    )}
-                                />
-                            </div>
-                            <div className="flex flex-col gap-2">
-                                <label className="font-semibold">Pharmacy</label>
-                                <Controller
-                                    name="user"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Select
-                                            {...field}
-                                            value={field.value}
-                                            placeholder="Select user"
-                                            multipleValu={false}
-                                            onChange={(val) => field.onChange(val)}
-                                            options={user?.data?.data}
-                                            onSearch={(val) => setSearch(val)}
-                                            overlyClass="!bg-transparent"
-                                            inputClass="py-2  px-4 w-full rounded bg-white ring-gary_700 text-black bg-gray_500 text-body2 focus:ring-1 focus:ring-gary_700 focus:outline-none ring-1"
-                                        />
-                                    )}
-                                />
-                            </div>
+                </div>
+
+                {/* Form */}
+                <form className="px-4 py-2" onSubmit={handleSubmit(onSubmit)}>
+                    <div className="flex flex-col gap-3 mb-12">
+                        {/* Date */}
+                        <div className="flex flex-col gap-2">
+                            <label className="font-semibold">Date</label>
+                            <Controller
+                                name="date"
+                                control={control}
+                                render={({ field }) => (
+                                    <DtPicker
+                                        {...field}
+                                        value={field.value ? new Date(field.value) : new Date()}
+                                        onChange={(val) => {
+                                            if (val?.year && val?.month && val?.day) {
+                                                const selected = new Date(val.year, val.month - 1, val.day);
+                                                if (!isNaN(selected.getTime())) {
+                                                    const formatted = selected.toISOString().split("T")[0];
+                                                    field.onChange(formatted);
+                                                    handleChange("date", formatted);
+                                                }
+                                            }
+                                        }}
+                                        calendarType="US"
+                                        placeholder="Select a date"
+                                        inputClass="!py-2 !h-[34px] custom-input !px-4 w-full rounded bg-white ring-gary_700 text-black bg-gray_500 text-body2 focus:ring-1 focus:ring-gary_700 focus:outline-none ring-1"
+                                    />
+                                )}
+                            />
                         </div>
 
-                        <div className=" flex items-center flex-col gap-3">
-                            <button type="submit" className="cursor-pointer w-full px-4 py-2 text-subtitle2 bg-success_main text-white rounded">
-                                Search
-                            </button>
-                            <Link href="/report" onClick={toggleDrawer} type="submit" className="cursor-pointer w-full px-4 flex items-center justify-center py-2 text-subtitle2 bg-info_main text-white rounded">
-                                Report
-                            </Link>
-                            {/* Submit Button */}
-                            <button type="button" onClick={logout} className="cursor-pointer w-full px-4  py-2 text-subtitle2 bg-warning_main text-white rounded">
-                                logout
-                            </button>
+                        {/* District */}
+                        <div className="flex flex-col gap-2">
+                            <label className="font-semibold">District</label>
+                            <Controller
+                                name="district"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select
+                                        {...field}
+                                        options={district_options}
+                                        placeholder="Select District"
+                                        onChange={(val) => {
+                                            field.onChange(val);
+                                            handleChange("district", val);
+                                        }}
+                                    />
+                                )}
+                            />
                         </div>
-                    </form>
-                </div>
-            </Drawer>
-        </>
+
+                        {/* Area */}
+                        <div className="flex flex-col gap-2">
+                            <label className="font-semibold">Area</label>
+                            <Controller
+                                name="area"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select
+                                        {...field}
+                                        options={area_options}
+                                        placeholder="Select Area"
+                                        onChange={(val) => {
+                                            field.onChange(val);
+                                            handleChange("area", val);
+                                        }}
+                                    />
+                                )}
+                            />
+                        </div>
+
+                        {/* Pharmacy */}
+                        <div className="flex flex-col gap-2">
+                            <label className="font-semibold">Pharmacy</label>
+                            <Controller
+                                name="user"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select
+                                        {...field}
+                                        options={user_options}
+                                        placeholder="Select Pharmacy"
+                                        onInputChange={(val) => setSearch(val)}
+                                        onChange={(val) => {
+                                            field.onChange(val);
+                                            handleChange("user", val);
+                                        }}
+                                    />
+                                )}
+                            />
+                        </div>
+                    </div>
+                    <div className="flex items-center flex-col gap-3">
+                        <button type="submit" className="cursor-pointer w-full px-4 py-2 text-subtitle2 bg-success_main text-white rounded">
+                            Search
+                        </button>
+                        <Link href="/report" onClick={toggleDrawer} className="cursor-pointer w-full px-4 flex items-center justify-center py-2 text-subtitle2 bg-info_main text-white rounded">
+                            Report
+                        </Link>
+                        <button type="button" onClick={logout} className="cursor-pointer w-full px-4 py-2 text-subtitle2 bg-warning_main text-white rounded">
+                            Logout
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </Drawer>
     );
 };
 

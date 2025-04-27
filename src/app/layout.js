@@ -1,4 +1,3 @@
-"use client";
 import { Provider } from "react-redux"; // Import the Provider from react-redux
 import { Poppins } from "next/font/google";
 
@@ -16,11 +15,11 @@ const poppins = Poppins({
 export default function RootLayout({ children }) {
     return (
         <html lang="en" className={poppins.variable}>
-            <Provider store={store}>
-                <ProductProvider>
-                    <body className="font-poppins">{children}</body>
-                </ProductProvider>
-            </Provider>
+            <ProductProvider>
+                {/* <Provider store={store}> */}
+                <body className="font-poppins">{children}</body>
+                {/* </Provider> */}
+            </ProductProvider>
         </html>
     );
 }

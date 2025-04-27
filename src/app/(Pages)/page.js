@@ -20,21 +20,22 @@ const Home = () => {
     const { setIsData, isFilterData, activeTab, isPurchase, isShort, setTitle, initializePurchases, purchases, setIsShort, isSpecial, setIsSpecial } = useTab();
     const { purchases: expence } = useStorPurchase();
 
-    const date = new Date();
-    date.setDate(date.getDate() - 1);
-    const previousDay = date.toISOString().split("T")[0];
-    const presentDate = getFormattedDate(isFilterData?.date);
+    const disctictValue = isFilterData?.district?.value;
+    const areaValue = isFilterData?.area?.value;
+    const userValue = isFilterData?.user?.value;
 
     const info = {
-        date: presentDate || previousDay,
-        pagination: 5000,
-        district: isFilterData?.district?.id || "1",
-        area_id: isFilterData?.area?.id || "11",
-        user_id: isFilterData?.user?.id,
+        date: isFilterData?.date,
+        pagination: "5000",
+        district: disctictValue?.toString(),
+        area_id: areaValue?.toString(),
+        user_id: userValue?.toString(),
         isShort: isShort,
         isPurchase: isPurchase,
     };
+
     const { data } = useAddPurchaseInfo(info);
+
     const allPurchaseData = data?.data?.product_list;
 
     // purchase data
@@ -129,24 +130,10 @@ const Home = () => {
     const storPurchase = {
         date: data?.data?.date,
         district_id: data?.data?.district,
-        area_id: isFilterData?.area?.id || "11",
+        area_id: isFilterData?.area?.value,
         total_amount: data?.data?.total_amount,
-        expense_amount: data?.data?.purchase.expense_amount,
+        expense_amount: data?.data?.purchase?.expense_amount,
     };
-
-    const purchaseSums = useMemo(() => {
-        const purchaseTotalAmountSum = purchases_lists?.reduce((sum, product) => sum + product.buying_price, 0) || 0;
-        const PsTotalAmountSum = ps_data?.reduce((sum, product) => sum + product.buying_price, 0) || 0;
-        const stockPurchaseTotalAmountSum = purchases?.reduce((sum, product) => sum + product.stock * product.rate, 0) || 0;
-
-        return {
-            purchaseTotalAmountSum,
-            PsTotalAmountSum,
-            stockPurchaseTotalAmountSum,
-        };
-    }, [purchases_lists, ps_data, purchases]);
-
-    console.log("Purchase sums:", all);
 
     useEffect(() => {
         if (typeof window !== "undefined") {

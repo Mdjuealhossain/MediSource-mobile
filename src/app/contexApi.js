@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
 
 const ProductContext = createContext();
 
@@ -13,11 +13,7 @@ export function ProductProvider({ children }) {
     const [dontReceived, setDontReceived] = useState([]);
     const [isSpecial, setIsSpecial] = useState(false);
     const [isShort, setIsShort] = useState("");
-    const [purchaseSums, setPurchaseSums] = useState({
-        purchaseTotalAmountSum: 0,
-        PsTotalAmountSum: 0,
-        stockPurchaseTotalAmountSum: 0,
-    });
+    const [purchaseSums, setPurchaseSums] = useState({});
 
     const [title, setTitle] = useState("");
 
@@ -48,6 +44,13 @@ export function ProductProvider({ children }) {
 
         setPurchases(filtered);
     };
+
+    useEffect(() => {
+        const storedData = JSON.parse(localStorage.getItem("filterData"));
+        if (storedData) {
+            setIsFilterData(storedData);
+        }
+    }, []);
 
     return (
         <ProductContext.Provider
