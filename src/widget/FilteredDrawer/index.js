@@ -106,7 +106,7 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
                                         <Select
                                             {...field}
                                             value={field.value}
-                                            defaultValue={data?.data[3].name}
+                                            defaultValue={data?.data[3]?.name}
                                             placeholder="Select One"
                                             multipleValu={false}
                                             onChange={(val) => field.onChange(val)}
@@ -126,7 +126,7 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
                                         <Select
                                             {...field}
                                             value={field.value}
-                                            defaultValue={areaData?.data[0].name}
+                                            defaultValue={areaData?.data[0]?.name}
                                             placeholder="Select One"
                                             multipleValu={false}
                                             onChange={(val) => field.onChange(val)}

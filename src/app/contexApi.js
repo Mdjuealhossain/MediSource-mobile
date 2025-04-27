@@ -13,6 +13,11 @@ export function ProductProvider({ children }) {
     const [dontReceived, setDontReceived] = useState([]);
     const [isSpecial, setIsSpecial] = useState(false);
     const [isShort, setIsShort] = useState("");
+    const [purchaseSums, setPurchaseSums] = useState({
+        purchaseTotalAmountSum: 0,
+        PsTotalAmountSum: 0,
+        stockPurchaseTotalAmountSum: 0,
+    });
 
     const [title, setTitle] = useState("");
 
@@ -66,6 +71,8 @@ export function ProductProvider({ children }) {
                 toggleIsPs,
                 isSpecial,
                 setIsSpecial,
+                purchaseSums,
+                setPurchaseSums,
             }}
         >
             {children}

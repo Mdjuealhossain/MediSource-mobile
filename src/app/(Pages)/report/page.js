@@ -9,10 +9,13 @@ import { MdOutlineArrowRightAlt } from "react-icons/md";
 
 const Report = () => {
     const { isFilterData, isSpecial } = useTab();
+    const { total } = useTab();
     const { isOpen, openModal, closeModal } = useModal();
-    console.log("isFilterData---", isFilterData);
+
+    console.log("total---", total.purchase);
+
     const handleCosts = (value) => {
-        console.log("value", value);
+        // console.log("value", value);
     };
     return (
         <>
@@ -27,19 +30,19 @@ const Report = () => {
                     </Link>
                 </div>
                 <div className=" flex flex-col gap-2 pb-4 mb-12">
-                    <div className=" flex items-center justify-between">
+                    {/* <div className=" flex items-center justify-between">
                         <p className=" text-base font-medium capitalize">distric</p>
                         <p className=" text-sm font-medium capitalize">{isFilterData?.district?.name}</p>
-                    </div>
-                    <div className=" flex items-center justify-between ">
-                        <p className=" text-base font-medium capitalize">area</p>
+                    </div> */}
+                    <div className=" flex items-center gap-1 justify-center">
+                        <p className=" text-base font-medium capitalize">area:</p>
                         <p className=" text-sm font-medium capitalize">{isFilterData?.area?.name}</p>
                     </div>
                 </div>
                 <div className=" flex flex-col gap-2 border-b border-black pb-2">
                     <div className=" flex items-center justify-between">
                         <p className=" text-sm  capitalize">total purchases</p>
-                        <p className=" text-sm  capitalize">24555</p>
+                        {/* <p className=" text-sm  capitalize">{isData}</p> */}
                     </div>
                     <div className=" flex items-center justify-between ">
                         <p className=" text-sm  capitalize">cost</p>

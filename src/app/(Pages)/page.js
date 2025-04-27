@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import Products from "@/widget/Products";
 import Tabs from "@/components/Tabs";
@@ -59,6 +59,7 @@ const Home = () => {
     // admin
     const purchaseTotalAmountSum = purchases_lists?.reduce((sum, product) => sum + product.buying_price, 0);
     const PsTotalAmountSum = ps_data?.reduce((sum, product) => sum + product.buying_price, 0);
+    const stockPurchaseTotalAmountSum = purchases?.reduce((sum, product) => sum + product.stock * product.rate, 0);
 
     // admin 4%
     const all_sum = purchases?.reduce((sum, product) => sum + product.buying_price, 0);
@@ -76,13 +77,13 @@ const Home = () => {
     }, 0);
 
     // special admin
+
+    const totalStockAmount = all?.reduce((sum, product) => sum + product.total_amount, 0);
     const orderSum = allPurchaseData?.reduce((sum, product) => sum + product.total_amount, 0);
     const purchaseTotalAmountSumIsSpecial = purchases_lists?.reduce((sum, product) => sum + product.total_amount, 0);
     const drSum = dr?.reduce((sum, product) => sum + product.total_amount, 0);
     const returnedSum = returned?.reduce((sum, product) => sum + product.total_amount, 0);
     const stock = allPurchaseData?.filter((item) => item.stock);
-
-    console.log("purchases----", all);
 
     useEffect(() => {
         if (activeTab == "all" && !isSpecial) {
@@ -119,6 +120,10 @@ const Home = () => {
             setIsData(returnedSum);
             setTitle("Return");
         }
+        if (activeTab == "stock" && isSpecial) {
+            setIsData(totalStockAmount);
+            setTitle("Stock");
+        }
     }, [activeTab, data, purchases_lists]);
 
     const storPurchase = {
@@ -127,6 +132,20 @@ const Home = () => {
         area_id: isFilterData?.area?.id || "11",
         total_amount: data?.data?.total_amount,
     };
+
+    const purchaseSums = useMemo(() => {
+        const purchaseTotalAmountSum = purchases_lists?.reduce((sum, product) => sum + product.buying_price, 0) || 0;
+        const PsTotalAmountSum = ps_data?.reduce((sum, product) => sum + product.buying_price, 0) || 0;
+        const stockPurchaseTotalAmountSum = purchases?.reduce((sum, product) => sum + product.stock * product.rate, 0) || 0;
+
+        return {
+            purchaseTotalAmountSum,
+            PsTotalAmountSum,
+            stockPurchaseTotalAmountSum,
+        };
+    }, [purchases_lists, ps_data, purchases]);
+
+    console.log("Purchase sums:", all);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -139,9 +158,11 @@ const Home = () => {
     }, []);
 
     const handleExpense = async (value) => {
+        let expence_num = isNaN(value) ? 0 : Number(value);
+
         const final_data = {
             ...storPurchase,
-            expense_amount: value,
+            expense_amount: expence_num,
             product_id: "1",
             product_type: "purchase",
             buying_price: 0,
@@ -167,9 +188,13 @@ const Home = () => {
 
     return (
         <div className=" relative">
-            <button onClick={openModal} className=" px-2 py-1 bg-warning_main text-white rounded absolute -top-9 right-14">
-                Add Expense
-            </button>
+            <div className="absolute -top-9 right-14 flex items-center gap-2">
+                <p className=" text-center font-semibold text-white"> {parseFloat((stockPurchaseTotalAmountSum || 0).toFixed(2))}</p>
+                <button onClick={openModal} className=" px-2 py-1 bg-warning_main text-white rounded ">
+                    +
+                </button>
+            </div>
+
             <div className=" py-6 px-4">
                 <Tabs tabs={isSpecial ? tabsPhone?.data : tabs?.data} contentClass={"md:mt-10 mt-6"} isSpecial={isSpecial}>
                     {!isSpecial
@@ -180,7 +205,7 @@ const Home = () => {
                           ))
                         : tabsPhone?.data.map((content) => (
                               <div key={content.id} value={`${content.value}`}>
-                                  <Products isSpecial={isSpecial} products={activeTab == "purchase" ? purchases_lists : activeTab == "high" ? high : activeTab == "low" ? low : activeTab == "dr" ? dr : activeTab == "return" ? returned : allPurchaseData} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
+                                  <Products isSpecial={isSpecial} products={activeTab == "purchase" ? purchases_lists : activeTab == "high" ? high : activeTab == "low" ? low : activeTab == "dr" ? dr : activeTab == "return" ? returned : activeTab == "stock" ? all : allPurchaseData} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
                               </div>
                           ))}
                 </Tabs>
@@ -208,6 +233,7 @@ const tabsPhone = {
     data: [
         { id: 1, value: "order", name: "Order" },
         { id: 2, value: "purchase", name: "Purchase" },
+        { id: 3, value: "stock", name: "Stock" },
         { id: 4, value: "dr", name: "D-R" },
         { id: 5, value: "return", name: "Return" },
     ],

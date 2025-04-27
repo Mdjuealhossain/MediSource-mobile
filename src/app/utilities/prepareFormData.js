@@ -14,15 +14,15 @@ export const prepareFormData = (data) => {
     appendIfValid(formData, "product_ids[]", id);
     appendIfValid(formData, `quantities[${id}]`, qty);
     appendIfValid(formData, `product_type[${id}]`, data.product_type);
-    appendIfValid(formData, "stock_item_amount", "10");
-    appendIfValid(formData, "short_item", "0");
-    appendIfValid(formData, "return", "0");
-    appendIfValid(formData, `is_dr[${id}]`, data.is_dr);
-    appendIfValid(formData, `return_qty[${id}]`, data.return_qty);
-    appendIfValid(formData, "total_delivery", "10");
+    appendIfValid(formData, "stock_item_amount", data.stock_item_amount);
+    appendIfValid(formData, "short_item", data.short_item);
+    appendIfValid(formData, "return", data.return);
+    appendIfValid(formData, `is_dr[${id}]`, data.is_dr); // Will replace null with 1 if is_dr is null
+    appendIfValid(formData, `return_qty[${id}]`, data.return_qty); // Will replace null with 0 if return_qty is null
+    appendIfValid(formData, "total_delivery", data.total_delivery);
     appendIfValid(formData, "expense_amount", data.expense_amount);
-    appendIfValid(formData, "expense_description", "");
-    appendIfValid(formData, `high_low[${id}]`, data.high_low);
+    appendIfValid(formData, "expense_description", data.expense_description);
+    appendIfValid(formData, `high_low[${id}]`, data.high_low); // Will replace null with "high" if high_low is null
 
     return formData;
 };

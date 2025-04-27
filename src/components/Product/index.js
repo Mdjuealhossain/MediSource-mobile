@@ -37,14 +37,13 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
     const final_qnt = item.total_qty - item.stock;
 
     const handlePurchaseSubmit = async (formData) => {
-        // const qnt = formData.qnt ? formData.qnt : item.total_qty;
-        // setQnt(qnt);
+        let purchase_num = isNaN(formData.purchase) ? 0 : Number(formData.purchase);
 
         const final_data = {
             ...formData,
             ...item,
             ...storPurchase,
-            buying_price: formData.purchase * final_qnt,
+            buying_price: purchase_num * item.total_qty,
         };
 
         const postData = prepareFormData(final_data);
@@ -106,10 +105,12 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
         }
     };
     const handleReturn = async (value) => {
+        let return_num = isNaN(value) ? 0 : Number(value);
+
         const final_data = {
             ...item,
             ...storPurchase,
-            return_qty: value,
+            return_qty: return_num,
         };
 
         const drData = prepareFormData(final_data);
@@ -129,14 +130,12 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
 
     const renderAmount = () => (type === "purchase" || type === "high" || type === "low" || type === "p-s" ? (item.buying_price || 0).toFixed(1) : amount.toFixed(1));
 
-    // console.log("first---", item.stock);
-
     return (
         <>
             <div className="flex items-center gap-1 w-full">
                 <p className="font-medium text-subtitle1">{index + 1}.</p>
                 <div className="w-full">
-                    <div className={`px-3 relative mb-1 py-2 rounded border border-gary_700 w-full bg-paper ${item.stock > 0 && type == "all" ? " bg-black/20" : " bg-paper"}`}>
+                    <div className={`px-3 relative mb-1 py-2 rounded border border-gary_700 w-full  ${item.stock > 0 && (type == "all" || type === "purchase" || type === "p-s") ? " bg-black/20" : " bg-paper"}`}>
                         <h6 className="text-H6 font-medium mb-1">{item.name || "Unknown name"}</h6>
                         <div className=" flex items-center justify-between">
                             <div className="flex items-center gap-0.5">
@@ -162,7 +161,7 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
                             </button>
                         )}
                         {isSpecial && type === "purchase" && (
-                            <button disabled={item.return_qty} onClick={openReturn} className={`px-4 py-1  text-white  absolute right-0 bottom-0 ${item.return_qty ? "bg-warning_main/40" : "bg-warning_main"}`}>
+                            <button onClick={openReturn} className={`px-4 py-1  text-white  absolute right-0 bottom-0 bg-warning_main`}>
                                 <MdOutlineAssignmentReturn className="text-white" />
                             </button>
                         )}
@@ -176,22 +175,23 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
                         {(type === "purchase" || type === "p-s") && !isSpecial && (
                             <>
                                 {!item.isPs ? (
-                                    <button onClick={() => toggleIsPs(item.product_id)} className=" px-2 py-1 bg-warning_main text-white absolute right-2 text-caption rounded top-1/2 -translate-y-1/2 ">
+                                    <button onClick={() => toggleIsPs(item.product_id)} className=" px-2 py-1 bg-warning_main text-white absolute right-2 text-caption rounded top-2  ">
                                         PS
                                     </button>
                                 ) : (
-                                    <button onClick={() => toggleIsPs(item.product_id)} className=" px-2 py-1 bg-warning_main text-white absolute right-2 text-caption rounded top-1/2 -translate-y-1/2 ">
+                                    <button onClick={() => toggleIsPs(item.product_id)} className=" px-2 py-1 bg-warning_main text-white absolute right-2 text-caption rounded top-2 ">
                                         Pur
                                     </button>
                                 )}
                             </>
                         )}
+                        {item.stock > 0 && (type == "purchase" || type == "p-s") && <p className={`text-sm font-semibold text-info_main absolute right-4 text-caption rounded  ${isSpecial ? " bottom-1/2 translate-y-1/2" : " bottom-0 "}`}>{item.stock}</p>}
                     </div>
 
-                    {IsAdd && final_qnt > 0 && (
+                    {IsAdd && !final_qnt <= 0 && (
                         <form onSubmit={handleSubmit(handlePurchaseSubmit)} className="bg-white z-50 rounded-md flex items-center border justify-center">
                             <input {...register("purchase", { required: true })} placeholder="Enter Purchase" className="text-subtitle2 placeholder:text-subtitle2 border-r-[2px] w-1/2 outline-none rounded-l px-4 py-[4px]" />
-                            <input {...register("qnt")} placeholder="Q/t" className=" w-12 px-2 py-[4px] outline-none" />
+                            {/* <input {...register("qnt")} placeholder="Q/t" className=" w-12 px-2 py-[4px] outline-none" /> */}
                             <button type="submit" className="text-body2 font-medium px-8 py-1.5 rounded-r text-white bg-success_main capitalize border w-1/2">
                                 Add
                             </button>
