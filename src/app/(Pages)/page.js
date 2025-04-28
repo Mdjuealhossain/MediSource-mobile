@@ -79,6 +79,8 @@ const Home = () => {
         return sum + discountedAmount;
     }, 0);
 
+    console.log("all----", data?.data);
+
     // special admin
 
     const totalStockAmount = all?.reduce((sum, product) => sum + product.total_amount, 0);
@@ -151,7 +153,7 @@ const Home = () => {
         district_id: data?.data?.district,
         area_id: isFilterData?.area?.value,
         total_amount: data?.data?.total_amount,
-        expense_amount: data?.data?.purchase?.expense_amount,
+        expense_amount: data?.data?.purchase?.expense_amount || 0,
     };
 
     useEffect(() => {

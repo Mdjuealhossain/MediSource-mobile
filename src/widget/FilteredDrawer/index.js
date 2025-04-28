@@ -24,9 +24,7 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
     const { data: areaData } = useArea();
     const [search, setSearch] = useState("");
     const { data: userData } = useUserList({ search, pagination: 5000 });
-    const { setIsFilterData, isFilterData } = useTab();
-
-    console.log("isFilterData--", isFilterData);
+    const { setIsFilterData } = useTab();
 
     const {
         control,
@@ -50,7 +48,7 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
     }));
 
     const area_options = [
-        { value: "all", label: "All Areas" },
+        { value: "", label: "All Areas" },
         ...(Array.isArray(areaData?.data)
             ? areaData.data.map((item) => ({
                   value: item.id,
@@ -59,10 +57,15 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
             : []),
     ];
 
-    const user_options = userData?.data?.data?.map((item) => ({
-        value: item.id,
-        label: item.name,
-    }));
+    const user_options = [
+        { value: "", label: "All" },
+        ...(Array.isArray(userData?.data?.data)
+            ? userData?.data?.data.map((item) => ({
+                  value: item.id,
+                  label: item.name,
+              }))
+            : []),
+    ];
 
     const updateLocalStorage = (formData) => {
         localStorage.setItem("filterData", JSON.stringify(formData));
@@ -83,7 +86,7 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
     };
 
     const handleChange = (name, value) => {
-        setValue(name, value); // only setValue, no localStorage update
+        setValue(name, value);
     };
 
     useEffect(() => {
@@ -96,8 +99,6 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
             const defaultArea = areaData.data[0];
 
             const savedData = JSON.parse(localStorage.getItem("filterData"));
-
-            console.log("savedData---", savedData);
 
             if (savedData) {
                 setValue("date", savedData.date || yesterdayISO);
@@ -164,7 +165,7 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
                                         }}
                                         calendarType="US"
                                         placeholder="Select a date"
-                                        inputClass="!py-2 !h-[34px] custom-input !px-4 w-full rounded bg-white ring-gary_700 text-black bg-gray_500 text-body2 focus:ring-1 focus:ring-gary_700 focus:outline-none ring-1"
+                                        inputClass="!py-2 !h-[38px] custom-input !px-4 w-full rounded bg-white ring-gary_700 text-black bg-gray_500 text-body2 focus:ring-1 focus:ring-gary_700 focus:outline-none ring-1"
                                     />
                                 )}
                             />
