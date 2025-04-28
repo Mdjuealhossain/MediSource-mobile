@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-
 import { useApi } from "./useApi";
 import { buildQueryParams } from "../utilities/buildQueryParams";
 
@@ -12,15 +11,20 @@ const useAddPurchaseInfo = (params = {}) => {
 
     const { district, date, area_id, user_id, pagination, product_type, is_dr, high_low, isPurchase, isShort } = params;
 
-    const queryString = buildQueryParams(params);
+    const queryString = buildQueryParams({ district, date, area_id, user_id, pagination, product_type, is_dr, high_low });
 
     const fetchProducts = async () => {
+        // Check if either 'district' or 'area_id' is present
+        if (!district && !area_id) {
+            // If both are missing, no API call
+            return;
+        }
+
         setLoading(true);
         setError(null);
 
         const newUrl = `${window.location.pathname}?${queryString}`;
-
-        // Update the URL without area reload
+        // Update the URL without reloading
         window.history.pushState(null, "", newUrl);
 
         // Perform the API request
@@ -42,7 +46,7 @@ const useAddPurchaseInfo = (params = {}) => {
         setLoading(false);
     };
 
-    // Trigger fetch when any of these params change
+    // useEffect to trigger fetch when dependencies change
     useEffect(() => {
         fetchProducts();
     }, [district, date, area_id, user_id, pagination, isPurchase, isShort, product_type, is_dr, high_low]);

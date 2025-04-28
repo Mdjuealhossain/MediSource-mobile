@@ -26,6 +26,8 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
     const { data: userData } = useUserList({ search, pagination: 5000 });
     const { setIsFilterData, isFilterData } = useTab();
 
+    console.log("isFilterData--", isFilterData);
+
     const {
         control,
         handleSubmit,
@@ -81,9 +83,7 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
     };
 
     const handleChange = (name, value) => {
-        setValue(name, value);
-        const currentData = getValues();
-        updateLocalStorage(currentData);
+        setValue(name, value); // only setValue, no localStorage update
     };
 
     useEffect(() => {
@@ -97,20 +97,30 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
 
             const savedData = JSON.parse(localStorage.getItem("filterData"));
 
+            console.log("savedData---", savedData);
+
             if (savedData) {
                 setValue("date", savedData.date || yesterdayISO);
                 setValue("district", savedData.district);
                 setValue("area", savedData.area);
                 setValue("user", savedData.user);
+
+                setIsFilterData(savedData);
             } else {
-                // If no saved filter, set defaults
-                setValue("date", yesterdayISO);
-                if (defaultDistrict) {
-                    setValue("district", { value: defaultDistrict.id, label: defaultDistrict.name });
-                }
-                if (defaultArea) {
-                    setValue("area", { value: defaultArea.id, label: defaultArea.name });
-                }
+                const defaultFormData = {
+                    date: yesterdayISO,
+                    district: defaultDistrict ? { value: defaultDistrict.id, label: defaultDistrict.name } : null,
+                    area: defaultArea ? { value: defaultArea.id, label: defaultArea.name } : null,
+                    user: null,
+                };
+
+                setValue("date", defaultFormData.date);
+                setValue("district", defaultFormData.district);
+                setValue("area", defaultFormData.area);
+                setValue("user", defaultFormData.user);
+
+                localStorage.setItem("filterData", JSON.stringify(defaultFormData));
+                setIsFilterData(defaultFormData);
             }
         }
     }, [districtData, areaData, setValue]);
@@ -134,21 +144,22 @@ const FilteredDrawer = ({ isOpen, toggleDrawer, direction }) => {
                         {/* Date */}
                         <div className="flex flex-col gap-2">
                             <label className="font-semibold">Date</label>
+
                             <Controller
                                 name="date"
                                 control={control}
                                 render={({ field }) => (
                                     <DtPicker
                                         {...field}
-                                        value={field.value ? new Date(field.value) : new Date()}
+                                        value={field.value ? new Date(field.value + "T00:00:00") : new Date()}
                                         onChange={(val) => {
                                             if (val?.year && val?.month && val?.day) {
-                                                const selected = new Date(val.year, val.month - 1, val.day);
-                                                if (!isNaN(selected.getTime())) {
-                                                    const formatted = selected.toISOString().split("T")[0];
-                                                    field.onChange(formatted);
-                                                    handleChange("date", formatted);
-                                                }
+                                                const year = val.year;
+                                                const month = String(val.month).padStart(2, "0");
+                                                const day = String(val.day).padStart(2, "0");
+
+                                                const formattedDate = `${year}-${month}-${day}`;
+                                                field.onChange(formattedDate);
                                             }
                                         }}
                                         calendarType="US"
