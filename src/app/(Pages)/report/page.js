@@ -60,9 +60,9 @@ const Report = () => {
     const total_costs = purchaseTotalAmountSum + Number(cost);
 
     // special all sum
-    const totalDelivary = purchaseTotalAmountSumIsSpecial + totalStockAmount - (returnedSum + drSum + extra);
+    const totalDelivary = purchaseTotalAmountSumIsSpecial + totalStockAmount - (returnedSum + drSum + Number(extra));
 
-    console.log("allPurchaseData", purchases);
+    console.log("allPurchaseData", typeof extra);
 
     useEffect(() => {
         if (extra) {
