@@ -9,7 +9,7 @@ export const appendIfValid = (formData, key, value) => {
                 value = 0;
                 break;
             case "is_dr":
-                value = "1";
+                value = "0";
                 break;
             case "high_low":
                 value = "high";

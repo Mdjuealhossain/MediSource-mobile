@@ -53,6 +53,7 @@ const Home = () => {
     const short = allPurchaseData?.filter((item) => item.product_type == "short" && item.buying_price == 0);
     const all = allPurchaseData?.filter((item) => item.buying_price < 1 && item.product_type !== "short" && item.product_type !== "stock ");
     const dr = allPurchaseData?.filter((item) => item.buying_price > 0 && item.is_dr == "1");
+
     const returned = purchases?.filter((item) => item.return_qty);
 
     // with 4% -
@@ -62,6 +63,7 @@ const Home = () => {
     // admin
     const purchaseTotalAmountSum = purchases_lists?.reduce((sum, product) => sum + product.buying_price, 0);
     const PsTotalAmountSum = ps_data?.reduce((sum, product) => sum + product.buying_price, 0);
+
     const stockPurchaseTotalAmountSum = purchases?.reduce((sum, product) => sum + product.stock * product.rate, 0);
 
     // admin 4%
@@ -79,8 +81,6 @@ const Home = () => {
         return sum + discountedAmount;
     }, 0);
 
-    console.log("all----", data?.data);
-
     // special admin
 
     const totalStockAmount = all?.reduce((sum, product) => sum + product.total_amount, 0);
@@ -89,6 +89,9 @@ const Home = () => {
     const drSum = dr?.reduce((sum, product) => sum + product.total_amount, 0);
     const returnedSum = returned?.reduce((sum, product) => sum + product.total_amount, 0);
     const stock = allPurchaseData?.filter((item) => item.stock);
+    const totalAllShort = short?.reduce((sum, product) => sum + product.total_amount, 0);
+
+    console.log("dr---", data?.data);
 
     useEffect(() => {
         if (activeTab == "all" && !isSpecial) {
@@ -129,24 +132,11 @@ const Home = () => {
             setIsData(totalStockAmount);
             setTitle("Stock");
         }
+        if (activeTab == "short" && isSpecial) {
+            setIsData(totalAllShort);
+            setTitle("Short");
+        }
     }, [activeTab, data, purchases_lists]);
-
-    const sums = useSelector((state) => state.sums);
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        dispatch(
-            setAllSums({
-                totalDiscountedAmountAllorde: totalDiscountedAmountAllorde,
-                purchaseTotalAmountSum: purchaseTotalAmountSum,
-                PsTotalAmountSum: PsTotalAmountSum,
-                totalDiscountedAmountAllShort: totalDiscountedAmountAllShort,
-                purchaseTotalAmountSumIsSpecial: purchaseTotalAmountSumIsSpecial,
-                returnedSum: returnedSum,
-                totalStockAmount: totalStockAmount,
-            })
-        );
-    }, [dispatch, purchases_lists]);
 
     const storPurchase = {
         date: data?.data?.date,
@@ -159,9 +149,10 @@ const Home = () => {
     useEffect(() => {
         if (typeof window !== "undefined") {
             const storedPhone = localStorage.getItem("phoneNumber");
-
+            const special = JSON.parse(localStorage.getItem("isSpecial"));
             if (storedPhone && ["01854673267", "12345678910", ""].includes(storedPhone)) {
                 setIsSpecial(true);
+                localStorage.setItem("isSpecial", true);
             }
         }
     }, []);
@@ -195,6 +186,8 @@ const Home = () => {
         }
     };
 
+    console.log("sdgfvdbgv---", all);
+
     return (
         <div className=" relative">
             <div className="absolute -top-9 right-14 flex items-center gap-2">
@@ -202,16 +195,6 @@ const Home = () => {
                 <button onClick={openModal} className=" px-2 py-1 bg-warning_main text-white rounded ">
                     +
                 </button>
-            </div>
-            <div className="p-6 space-y-4">
-                <h1 className="text-2xl font-bold">Sum Values</h1>
-                <ul className="list-disc pl-6">
-                    {Object.entries(sums).map(([key, value]) => (
-                        <li key={key}>
-                            <strong>{key}:</strong> {value}
-                        </li>
-                    ))}
-                </ul>
             </div>
 
             <div className=" py-6 px-4">
@@ -224,7 +207,7 @@ const Home = () => {
                           ))
                         : tabsPhone?.data.map((content) => (
                               <div key={content.id} value={`${content.value}`}>
-                                  <Products isSpecial={isSpecial} products={activeTab == "purchase" ? purchases_lists : activeTab == "high" ? high : activeTab == "low" ? low : activeTab == "dr" ? dr : activeTab == "return" ? returned : activeTab == "stock" ? all : allPurchaseData} storPurchase={storPurchase} IsAdd={content.value == "all"} type={activeTab} />
+                                  <Products isSpecial={isSpecial} products={activeTab == "purchase" ? purchases_lists : activeTab == "high" ? high : activeTab == "low" ? low : activeTab == "dr" ? dr : activeTab == "return" ? returned : activeTab == "stock" ? all : activeTab == "short" ? short : allPurchaseData} storPurchase={storPurchase} type={activeTab} />
                               </div>
                           ))}
                 </Tabs>
@@ -255,5 +238,6 @@ const tabsPhone = {
         { id: 3, value: "stock", name: "Stock" },
         { id: 4, value: "dr", name: "D-R" },
         { id: 5, value: "return", name: "Return" },
+        { id: 6, value: "short", name: "Short" },
     ],
 };

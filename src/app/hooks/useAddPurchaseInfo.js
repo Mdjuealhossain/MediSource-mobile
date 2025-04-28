@@ -24,8 +24,11 @@ const useAddPurchaseInfo = (params = {}) => {
         setError(null);
 
         const newUrl = `${window.location.pathname}?${queryString}`;
-        // Update the URL without reloading
-        window.history.pushState(null, "", newUrl);
+
+        // Only update the URL if it's different to prevent unnecessary state changes
+        if (window.location.search !== `?${queryString}`) {
+            window.history.pushState(null, "", newUrl);
+        }
 
         // Perform the API request
         const {

@@ -8,6 +8,7 @@ const initialState = {
     purchaseTotalAmountSumIsSpecial: 0,
     returnedSum: 0,
     totalStockAmount: 0,
+    cost: 0,
 };
 
 const sumSlice = createSlice({

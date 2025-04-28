@@ -104,6 +104,27 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
             console.error("Short request error:", err);
         }
     };
+    const handleDrReset = async (data) => {
+        const final_data = {
+            ...data,
+            ...storPurchase,
+            is_dr: "0",
+        };
+
+        const drData = prepareFormData(final_data);
+        try {
+            const { success } = await d_r(drData);
+            if (success) {
+                setIsOpen(true);
+                setSuccess(true);
+                setIsMsg("Received");
+                setIsShort((prev) => !prev);
+                reset();
+            }
+        } catch (err) {
+            console.error("Short request error:", err);
+        }
+    };
     const handleReturn = async (value) => {
         let return_num = isNaN(value) ? 0 : Number(value);
 
@@ -135,7 +156,7 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
             <div className="flex items-center gap-1 w-full">
                 <p className="font-medium text-subtitle1">{index + 1}.</p>
                 <div className="w-full">
-                    <div className={`px-3 relative mb-1 py-2 rounded border border-gary_700 w-full  ${item.stock > 0 && (type == "all" || type === "purchase" || type === "p-s") ? " bg-black/20" : " bg-paper"}`}>
+                    <div className={`px-3 relative mb-1 py-2 rounded border border-gary_700 w-full  ${item.stock > 0 && (type == "all" || type === "purchase" || type === "p-s" || type == "order") ? " bg-black/20" : " bg-paper"}`}>
                         <h6 className="text-H6 font-medium mb-1">{item.name || "Unknown name"}</h6>
                         <div className=" flex items-center justify-between">
                             <div className="flex items-center gap-0.5">
@@ -172,6 +193,12 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
                             </button>
                         )}
 
+                        {type == "dr" && (
+                            <button onClick={() => handleDrReset(item)} className=" px-2 py-1 bg-warning_main text-white absolute right-2 top-1/2 text-caption rounded -translate-y-1/2 ">
+                                Receive
+                            </button>
+                        )}
+
                         {(type === "purchase" || type === "p-s") && !isSpecial && (
                             <>
                                 {!item.isPs ? (
@@ -185,10 +212,10 @@ const Product = ({ item, index, onDelete, isshowap = false, storPurchase = {}, t
                                 )}
                             </>
                         )}
-                        {item.stock > 0 && (type == "purchase" || type == "p-s") && <p className={`text-sm font-semibold text-info_main absolute right-4 text-caption rounded  ${isSpecial ? " bottom-1/2 translate-y-1/2" : " bottom-0 "}`}>{item.stock}</p>}
+                        {item.stock > 0 && (type == "purchase" || type == "p-s" || type == "order") && <p className={`text-sm font-semibold text-info_main absolute right-4 text-caption rounded  ${isSpecial ? " bottom-1/2 translate-y-1/2" : " bottom-0 "}`}>{item.stock}</p>}
                     </div>
 
-                    {IsAdd && !final_qnt <= 0 && (
+                    {IsAdd && final_qnt > 0 && (
                         <form onSubmit={handleSubmit(handlePurchaseSubmit)} className="bg-white z-50 rounded-md flex items-center border justify-center">
                             <input {...register("purchase", { required: true })} placeholder="Enter Purchase" className="text-subtitle2 placeholder:text-subtitle2 border-r-[2px] w-1/2 outline-none rounded-l px-4 py-[4px]" />
                             {/* <input {...register("qnt")} placeholder="Q/t" className=" w-12 px-2 py-[4px] outline-none" /> */}

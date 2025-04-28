@@ -51,6 +51,18 @@ export function ProductProvider({ children }) {
             setIsFilterData(storedData);
         }
     }, []);
+    // Load `isSpecial` from localStorage when the app loads
+    useEffect(() => {
+        const storedIsSpecial = JSON.parse(localStorage.getItem("isSpecial"));
+        if (storedIsSpecial !== null) {
+            setIsSpecial(storedIsSpecial);
+        }
+    }, []);
+
+    // Store `isSpecial` in localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem("isSpecial", JSON.stringify(isSpecial));
+    }, [isSpecial]);
 
     return (
         <ProductContext.Provider
